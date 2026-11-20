@@ -1,0 +1,27 @@
+@import 'tailwindcss';
+
+/* Dark mode por classe: <html class="dark"> */
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+    --color-slate-850: #1c2535;
+}
+
+/* Esconde as setas de input numérico */
+input[type='number']::-webkit-inner-spin-button,
+input[type='number']::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+input[type='number'] {
+    -moz-appearance: textfield;
+}
+
+html {
+    scrollbar-gutter: stable;
+}
+
+button:not(:disabled),
+[role='button']:not(:disabled) {
+    cursor: pointer;
+}
