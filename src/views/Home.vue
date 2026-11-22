@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onMounted, onBeforeUnmount, ref } from 'vue';
+import { computed, nextTick, onMounted, onBeforeUnmount, ref } from 'vue';
 import { animate, svg } from 'animejs';
 import { gsap } from 'gsap';
 import GoldenSpiral from '@/components/animations/GoldenSpiral.vue';
@@ -24,19 +24,123 @@ const atuacao = computed(() => perfil.value.atuacao);
 const projetos = computed(() => perfil.value.projetos);
 const ferramentas = computed(() => perfil.value.ferramentas);
 const contatos = computed(() => perfil.value.contatos);
-import { PhotoIcon, UserIcon, ArrowTopRightOnSquareIcon, MapPinIcon, AcademicCapIcon, LanguageIcon } from '@heroicons/vue/24/outline';
+import {
+    PhotoIcon,
+    UserIcon,
+    ArrowTopRightOnSquareIcon,
+    MapPinIcon,
+    AcademicCapIcon,
+    LanguageIcon,
+    MagnifyingGlassPlusIcon,
+    MagnifyingGlassMinusIcon,
+    ArrowsPointingInIcon,
+    XMarkIcon,
+} from '@heroicons/vue/24/outline';
+
+// Lightbox das imagens de projetos
+const lb = computed(() =>
+    porIdioma({
+        pt: { ampliar: n => `Ampliar imagem do projeto ${n}`, ampliarSlide: n => `Ampliar imagem: ${n}`, mais: 'Aumentar zoom', menos: 'Diminuir zoom', reset: 'Restaurar zoom', fechar: 'Fechar' },
+        en: { ampliar: n => `Enlarge image of project ${n}`, ampliarSlide: n => `Enlarge image: ${n}`, mais: 'Zoom in', menos: 'Zoom out', reset: 'Reset zoom', fechar: 'Close' },
+    })
+);
+const ZOOM_MIN = 1;
+const ZOOM_MAX = 4;
+const ZOOM_STEP = 0.5;
+const lightbox = ref(null); // { src, alt, titulo? }
+const zoom = ref(1);
+const pan = ref({ x: 0, y: 0 });
+const arrastando = ref(false);
+const btnFechar = ref(null);
+let origemFoco = null;
+let arrasto = null; // { id, x, y, px, py, moveu }
+let ignorarClique = false;
+
+const resetZoom = () => {
+    zoom.value = 1;
+    pan.value = { x: 0, y: 0 };
+};
+const setZoom = z => {
+    zoom.value = Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, Math.round(z * 100) / 100));
+    if (zoom.value === 1) pan.value = { x: 0, y: 0 };
+};
+const abrirLightbox = (src, alt, titulo = null) => {
+    origemFoco = document.activeElement;
+    lightbox.value = { src, alt, titulo };
+    resetZoom();
+    swiperInst?.autoplay?.stop();
+    document.body.style.overflow = 'hidden';
+    nextTick(() => btnFechar.value?.focus());
+};
+const fecharLightbox = () => {
+    if (!lightbox.value) return;
+    lightbox.value = null;
+    arrastando.value = false;
+    arrasto = null;
+    document.body.style.overflow = '';
+    swiperInst?.autoplay?.start();
+    origemFoco?.focus?.();
+};
+const onBackdropClick = () => {
+    if (ignorarClique) return (ignorarClique = false);
+    fecharLightbox();
+};
+const onWheel = e => setZoom(zoom.value + (e.deltaY < 0 ? 0.25 : -0.25));
+const onPointerDown = e => {
+    if (zoom.value <= 1) return;
+    e.currentTarget.setPointerCapture(e.pointerId);
+    arrasto = { id: e.pointerId, x: e.clientX, y: e.clientY, px: pan.value.x, py: pan.value.y, moveu: false };
+    arrastando.value = true;
+};
+const onPointerMove = e => {
+    if (!arrasto || arrasto.id !== e.pointerId) return;
+    const dx = e.clientX - arrasto.x;
+    const dy = e.clientY - arrasto.y;
+    if (Math.abs(dx) + Math.abs(dy) > 3) arrasto.moveu = true;
+    pan.value = { x: arrasto.px + dx, y: arrasto.py + dy };
+};
+const onPointerUp = e => {
+    if (!arrasto || arrasto.id !== e.pointerId) return;
+    ignorarClique = arrasto.moveu;
+    setTimeout(() => (ignorarClique = false), 0);
+    arrasto = null;
+    arrastando.value = false;
+};
+const onKeydown = e => {
+    if (!lightbox.value) return;
+    if (e.key === 'Escape') fecharLightbox();
+    else if (e.key === '+' || e.key === '=') setZoom(zoom.value + ZOOM_STEP);
+    else if (e.key === '-') setZoom(zoom.value - ZOOM_STEP);
+    else if (e.key === '0') resetZoom();
+};
 
 // Swiper (componentes Vue + estilos + módulos)
 import { Swiper, SwiperSlide } from 'swiper/vue';
 import 'swiper/css';
-import 'swiper/css/zoom';
 import 'swiper/css/effect-cube';
 import 'swiper/css/pagination';
 import 'swiper/css/navigation';
-import { EffectCube, Pagination, Navigation, Autoplay, Zoom } from 'swiper/modules';
+import { EffectCube, Pagination, Navigation, Autoplay } from 'swiper/modules';
 
-const modules = [EffectCube, Pagination, Navigation, Autoplay, Zoom];
+// Zoom do Swiper removido: o zoom agora é feito no lightbox (clique no slide), sem interferir na rotação do cubo.
+const modules = [EffectCube, Pagination, Navigation, Autoplay];
 const activeIndex = ref(0);
+let swiperInst = null;
+const onSwiper = s => (swiperInst = s);
+const abrirSlide = slide => abrirLightbox(slide.image, slide.title, slide.title);
+// No efeito cube os slides ficam num contexto 3D (preserve-3d + rotações acumuladas pelo loop) e o
+// hit-testing do navegador às vezes não acerta a face ativa: o ponteiro cai no próprio .swiper, então
+// nem o :hover (ícone de zoom) nem o clique chegam ao botão do slide (e, com touchEventsTarget 'wrapper',
+// o Swiper também ignorava esse toque). Por isso: touchEventsTarget="container", o clique do mouse é lido
+// pelo evento "click" do Swiper (só quando não houve arrasto) e o ícone fica numa camada fora do 3D.
+// O <button> do slide continua para teclado (event.detail === 0).
+const onSwiperClick = (swiper, e) => {
+    if (e?.target?.closest?.('.swiper-button-prev, .swiper-button-next, .swiper-pagination')) return;
+    abrirSlide(slides.value[swiper.realIndex]);
+};
+const onSlideBtnClick = (e, slide) => {
+    if (e.detail === 0) abrirSlide(slide);
+};
 
 // Imagem ausente em public/storage/: troca só o src (sem re-render, para não afetar o loop do Swiper)
 const PLACEHOLDER =
@@ -56,6 +160,8 @@ let drawAnimation = null;
 let gsapCtx = null;
 
 onMounted(() => {
+    window.addEventListener('keydown', onKeydown);
+
     // Desenho do nome "Igor Merlim" com anime.js
     const drawable = svg.createDrawable('.animated-svg path');
     drawAnimation = animate(drawable, {
@@ -71,6 +177,8 @@ onMounted(() => {
 });
 
 onBeforeUnmount(() => {
+    window.removeEventListener('keydown', onKeydown);
+    document.body.style.overflow = '';
     drawAnimation?.pause?.();
     gsapCtx?.revert();
 });
@@ -102,12 +210,26 @@ onBeforeUnmount(() => {
         </section>
 
         <!-- Sobre -->
-        <section id="sobre" class="scroll-section bg-white dark:bg-slate-850 py-20">
+        <section id="sobre" class="scroll-section bg-slate-100 dark:bg-slate-900 py-20">
             <div class="container mx-auto px-4 sm:px-16">
                 <div class="grid grid-cols-1 items-center gap-10 md:grid-cols-3 lg:px-8">
-                    <!-- Espaço reservado para a foto (trocar pelo <img> quando houver) -->
                     <div v-reveal class="mx-auto w-full max-w-xs md:col-span-1">
+                        <!-- Fundo em degradê cinza escuro com luz sutil nos cantos (aparece atrás e sobre a foto) -->
                         <div
+                            v-if="sobre.foto"
+                            class="foto-frame relative aspect-[4/5] w-full overflow-hidden rounded-2xl shadow-lg ring-1 ring-slate-900/10 dark:ring-white/10"
+                        >
+                            <img
+                                :src="sobre.foto"
+                                :alt="t.fotoAria"
+                                decoding="async"
+                                class="relative h-full w-full object-cover"
+                            />
+                            <span class="foto-luz pointer-events-none absolute inset-0" aria-hidden="true"></span>
+                        </div>
+                        <!-- Espaço reservado caso não haja foto -->
+                        <div
+                            v-else
                             role="img"
                             :aria-label="t.fotoAria"
                             class="flex aspect-[4/5] w-full flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-slate-300 bg-slate-100 text-slate-400 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-500"
@@ -222,6 +344,7 @@ onBeforeUnmount(() => {
                     </div>
 
                     <div v-reveal="{ delay: 0.1, y: 32 }" class="md:col-span-2 w-full px-4 lg:pr-10 lg:mt-3">
+                        <div class="group/cubo relative mx-auto w-full max-w-[700px]">
                         <swiper
                             :slidesPerView="1"
                             :style="{
@@ -229,28 +352,45 @@ onBeforeUnmount(() => {
                                 '--swiper-pagination-color': '#00649e',
                             }"
                             :effect="'cube'"
-                            :zoom="true"
                             :grabCursor="true"
+                            touchEventsTarget="container"
                             :loop="true"
                             :autoplay="{ delay: 15000, disableOnInteraction: false }"
                             :cubeEffect="{ shadow: true, slideShadows: true, shadowOffset: 20, shadowScale: 0.94 }"
                             :navigation="true"
                             :pagination="{ clickable: true }"
                             :modules="modules"
+                            @swiper="onSwiper"
                             @slideChange="onSlideChange"
+                            @click="onSwiperClick"
                             class="rounded-lg shadow-2xl"
                         >
-                            <swiper-slide v-for="(slide, index) in slides" :key="index" class="bg-slate-600/40">
-                                <div class="swiper-zoom-container">
-                                    <img
-                                        :src="slide.image"
-                                        :alt="slide.title"
-                                        class="rounded-lg w-full h-auto object-contain"
-                                        @error="usarPlaceholder"
-                                    />
-                                </div>
+                            <swiper-slide v-for="(slide, index) in slides" :key="index" class="overflow-hidden rounded-lg">
+                                <button
+                                    type="button"
+                                    class="slide-btn group relative block h-full w-full cursor-zoom-in focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-sky-500"
+                                    :aria-label="lb.ampliarSlide(slide.title)"
+                                    @click="onSlideBtnClick($event, slide)"
+                                >
+                                    <img :src="slide.image" :alt="slide.title" draggable="false" @error="usarPlaceholder" />
+                                    <!-- Só para foco via teclado; o hover usa a camada fora do 3D abaixo -->
+                                    <span
+                                        class="pointer-events-none absolute inset-0 flex items-center justify-center bg-slate-950/0 opacity-0 transition group-focus-visible:bg-slate-950/30 group-focus-visible:opacity-100"
+                                        aria-hidden="true"
+                                    >
+                                        <MagnifyingGlassPlusIcon class="size-10 text-white drop-shadow" />
+                                    </span>
+                                </button>
                             </swiper-slide>
                         </swiper>
+                        <!-- Ícone de zoom no hover, fora do contexto 3D do cubo (aparece igual em todos os slides) -->
+                        <span
+                            class="pointer-events-none absolute inset-0 z-[2] flex items-center justify-center rounded-lg bg-slate-950/0 opacity-0 transition group-hover/cubo:bg-slate-950/30 group-hover/cubo:opacity-100"
+                            aria-hidden="true"
+                        >
+                            <MagnifyingGlassPlusIcon class="size-10 text-white drop-shadow" />
+                        </span>
+                        </div>
                     </div>
 
                     <div v-reveal="{ delay: 0.2, y: 32 }" class="md:col-span-1 flex flex-col lg:pb-0">
@@ -299,7 +439,7 @@ onBeforeUnmount(() => {
         </section>
 
         <!-- Projetos (repositórios públicos do GitHub + projetos dos currículos) -->
-        <section id="projetos" class="scroll-section bg-white dark:bg-slate-850 py-20">
+        <section id="projetos" class="scroll-section bg-slate-100 dark:bg-slate-900 py-20">
             <div class="container mx-auto px-4 sm:px-16 lg:px-24">
                 <h2
                     v-reveal
@@ -317,15 +457,28 @@ onBeforeUnmount(() => {
                         v-reveal="{ delay: (i % 2) * 0.08 }"
                         class="flex flex-col overflow-hidden rounded-xl bg-slate-100 shadow-sm ring-1 ring-slate-900/5 md:last:odd:col-span-2 md:last:odd:w-[calc(50%-1rem)] md:last:odd:justify-self-center dark:bg-slate-900 dark:ring-white/10"
                     >
-                        <!-- object-contain + padding: print inteiro visível, sem cortar gráficos/dashboards -->
-                        <img
+                        <!-- Imagem ocupa todo o card (object-cover); clique abre o lightbox com zoom para ver o print inteiro -->
+                        <button
                             v-if="p.imagem"
-                            :src="p.imagem"
-                            :alt="t.projetoImgAria(p.nome)"
-                            loading="lazy"
-                            decoding="async"
-                            class="aspect-video w-full border-b border-slate-200 bg-slate-200/60 object-contain object-center p-2 dark:border-slate-800 dark:bg-slate-800/60"
-                        />
+                            type="button"
+                            class="group relative block aspect-video w-full cursor-zoom-in overflow-hidden border-b border-slate-200 bg-slate-200/60 focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-sky-500 dark:border-slate-800 dark:bg-slate-800/60"
+                            :aria-label="lb.ampliar(p.nome)"
+                            @click="abrirLightbox(p.imagem, t.projetoImgAria(p.nome))"
+                        >
+                            <img
+                                :src="p.imagem"
+                                :alt="t.projetoImgAria(p.nome)"
+                                loading="lazy"
+                                decoding="async"
+                                class="h-full w-full object-cover object-top transition duration-300 group-hover:scale-105"
+                            />
+                            <span
+                                class="pointer-events-none absolute inset-0 flex items-center justify-center bg-slate-950/0 opacity-0 transition group-hover:bg-slate-950/40 group-hover:opacity-100 group-focus-visible:bg-slate-950/40 group-focus-visible:opacity-100"
+                                aria-hidden="true"
+                            >
+                                <MagnifyingGlassPlusIcon class="size-10 text-white drop-shadow" />
+                            </span>
+                        </button>
                         <!-- Espaço reservado para imagem do projeto -->
                         <div
                             v-else
@@ -393,7 +546,7 @@ onBeforeUnmount(() => {
         </section>
 
         <!-- Contato -->
-        <section id="contato" class="scroll-section bg-white dark:bg-slate-850 py-20">
+        <section id="contato" class="scroll-section bg-slate-100 dark:bg-slate-900 py-20">
             <div class="container mx-auto px-4 text-center sm:px-16">
                 <h2 v-reveal class="text-3xl font-semibold tracking-tight text-slate-950 sm:text-5xl dark:text-white">{{ t.contato }}</h2>
                 <div class="mx-auto mt-10 grid max-w-3xl grid-cols-1 gap-4 sm:grid-cols-2">
@@ -412,6 +565,73 @@ onBeforeUnmount(() => {
                 </div>
             </div>
         </section>
+
+        <!-- Lightbox das imagens de projetos (zoom: botões, roda do mouse, duplo clique, teclas + - 0; arrastar para mover) -->
+        <Teleport to="body">
+            <Transition
+                enter-active-class="transition duration-200 ease-out"
+                enter-from-class="opacity-0"
+                leave-active-class="transition duration-150 ease-in"
+                leave-to-class="opacity-0"
+            >
+                <div
+                    v-if="lightbox"
+                    role="dialog"
+                    aria-modal="true"
+                    :aria-label="lightbox.alt"
+                    class="fixed inset-0 z-[100] flex items-center justify-center overflow-hidden bg-slate-950/90 backdrop-blur-sm"
+                    @click.self="onBackdropClick"
+                    @wheel.prevent="onWheel"
+                >
+                    <img
+                        :src="lightbox.src"
+                        :alt="lightbox.alt"
+                        draggable="false"
+                        @error="usarPlaceholder"
+                        class="max-h-[90vh] max-w-[95vw] touch-none select-none rounded-lg object-contain shadow-2xl"
+                        :class="[zoom > 1 ? (arrastando ? 'cursor-grabbing' : 'cursor-grab') : 'cursor-zoom-in', arrastando ? '' : 'transition-transform duration-150']"
+                        :style="{ transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})` }"
+                        @dblclick="zoom > 1 ? resetZoom() : setZoom(2)"
+                        @pointerdown="onPointerDown"
+                        @pointermove="onPointerMove"
+                        @pointerup="onPointerUp"
+                        @pointercancel="onPointerUp"
+                    />
+
+                    <p
+                        v-if="lightbox.titulo"
+                        class="pointer-events-none absolute left-4 right-20 top-5 truncate text-lg font-semibold text-white drop-shadow"
+                    >
+                        {{ lightbox.titulo }}
+                    </p>
+
+                    <div
+                        class="absolute bottom-6 left-1/2 flex -translate-x-1/2 items-center gap-1 rounded-full bg-slate-900/80 p-1 text-white shadow-lg ring-1 ring-white/10"
+                    >
+                        <button type="button" class="lb-btn" :aria-label="lb.menos" :disabled="zoom <= ZOOM_MIN" @click="setZoom(zoom - ZOOM_STEP)">
+                            <MagnifyingGlassMinusIcon class="size-5" aria-hidden="true" />
+                        </button>
+                        <span class="w-14 text-center text-sm tabular-nums" aria-live="polite">{{ Math.round(zoom * 100) }}%</span>
+                        <button type="button" class="lb-btn" :aria-label="lb.mais" :disabled="zoom >= ZOOM_MAX" @click="setZoom(zoom + ZOOM_STEP)">
+                            <MagnifyingGlassPlusIcon class="size-5" aria-hidden="true" />
+                        </button>
+                        <button type="button" class="lb-btn" :aria-label="lb.reset" :disabled="zoom === 1" @click="resetZoom">
+                            <ArrowsPointingInIcon class="size-5" aria-hidden="true" />
+                        </button>
+                    </div>
+
+                    <button
+                        ref="btnFechar"
+                        type="button"
+                        class="lb-btn absolute right-4 top-4 bg-slate-900/80 ring-1 ring-white/10"
+                        :aria-label="lb.fechar"
+                        @click="fecharLightbox"
+                    >
+                        <XMarkIcon class="size-6 text-white" aria-hidden="true" />
+                    </button>
+                </div>
+            </Transition>
+        </Teleport>
     </div>
 </template>
 
@@ -424,16 +644,57 @@ onBeforeUnmount(() => {
     vector-effect: non-scaling-stroke;
 }
 
+.foto-frame {
+    background:
+        radial-gradient(circle at 0% 0%, rgb(255 255 255 / 0.14), transparent 45%),
+        radial-gradient(circle at 100% 100%, rgb(255 255 255 / 0.08), transparent 50%),
+        linear-gradient(160deg, #3f4248 0%, #26282d 55%, #141518 100%);
+}
+.foto-luz {
+    background:
+        radial-gradient(circle at 0% 0%, rgb(255 255 255 / 0.12), transparent 35%),
+        radial-gradient(circle at 100% 0%, rgb(255 255 255 / 0.05), transparent 30%),
+        radial-gradient(circle at 100% 100%, rgb(255 255 255 / 0.07), transparent 35%);
+    mix-blend-mode: screen;
+    box-shadow: inset 0 0 40px rgb(0 0 0 / 0.35);
+}
+
+.lb-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 9999px;
+    color: #fff;
+    transition: background-color 0.15s;
+}
+.lb-btn:hover:not(:disabled) {
+    background-color: rgb(255 255 255 / 0.15);
+}
+.lb-btn:focus-visible {
+    outline: 2px solid #0ea5e9;
+    outline-offset: 2px;
+}
+.lb-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
 .swiper {
     width: 100%;
     max-width: 700px;
     aspect-ratio: 55 / 34;
 }
 
-.swiper-slide img {
+/* Imagem preenche 100% da face do cubo, sem faixas/bordas; o print inteiro fica no lightbox */
+.slide-btn img {
     display: block;
     width: 100%;
     height: 100%;
-    object-fit: contain;
+    object-fit: cover;
+    object-position: top;
+    user-select: none;
+    -webkit-user-drag: none;
 }
 </style>

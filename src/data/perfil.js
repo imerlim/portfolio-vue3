@@ -11,6 +11,8 @@ export const sobre = {
     // Headline do LinkedIn
     destaque: 'PHP (Laravel) • Node.js (NestJS) • SQL (MySQL/Postgres) • Vue.js • React • Inertia • Tailwind',
     local: 'Rio de Janeiro, RJ — Brasil',
+    // Foto em public/storage/perfil/
+    foto: `${import.meta.env.BASE_URL}storage/perfil/foto-perfil.png`,
     // Resumo do CV_pt + resumo do LinkedIn
     paragrafos: [
         'Desenvolvedor Full-Stack com +5 anos de experiência prática na construção de sistemas escaláveis com Laravel, Vue.js e tecnologias web modernas. Especializado em integrações de ERP, automação de marketplaces e APIs de alta performance.',

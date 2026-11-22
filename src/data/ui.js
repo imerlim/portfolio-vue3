@@ -22,7 +22,7 @@ export const ui = {
             { name: 'Calculadora de Juros Compostos', description: 'Planeje sua aposentadoria com investimentos' },
         ],
         home: {
-            fotoAria: 'Espaço reservado para a foto de Igor Merlim',
+            fotoAria: 'Foto de Igor Merlim',
             foto: 'Foto',
             sobre: 'Sobre',
             formacao: 'Formação',
@@ -106,7 +106,7 @@ export const ui = {
             { name: 'Compound Interest Calculator', description: 'Plan your retirement with investments' },
         ],
         home: {
-            fotoAria: 'Placeholder for a photo of Igor Merlim',
+            fotoAria: 'Photo of Igor Merlim',
             foto: 'Photo',
             sobre: 'About',
             formacao: 'Education',
