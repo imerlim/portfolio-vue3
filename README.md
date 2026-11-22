@@ -1,40 +1,111 @@
 # Portfólio — Igor Merlim (Vue 3)
 
-SPA estática em Vue 3 + Vite + Tailwind CSS v4 (dark mode por classe), sem backend.
+SPA estática em **Vue 3 + Vite + Tailwind CSS v4**, sem backend. Bilíngue (PT/EN), com tema claro/escuro, animação Three.js e duas calculadoras financeiras.
 
-- **Rotas** (hash history, compatível com GitHub Pages):
-  - `#/` — Início (animação Three.js + carrossel de experiência profissional)
-  - `#/calculadora-margem` — Calculadora de margem de lucro
-  - `#/calculadora-juros-compostos` — Calculadora de juros compostos
-- **Tema**: botão sol/lua na barra; preferência salva em `localStorage` (`theme`).
+## Rotas
 
-## Desenvolvimento
+Usa hash history (`createWebHashHistory`), então funciona no GitHub Pages sem configurar 404/rewrites.
+
+| Rota | Página |
+| --- | --- |
+| `#/` | Início: hero com animação Three.js, Sobre, Stack, Experiência (carrossel), Projetos, Ferramentas e Contato |
+| `#/calculadora-margem` | Calculadora de margem de lucro |
+| `#/calculadora-juros-compostos` | Calculadora de juros compostos |
+
+Qualquer outra rota redireciona para `#/`.
+
+## Funcionalidades
+
+- **Tema claro/escuro**: botão sol/lua na barra (`ThemeSwitcher.vue`). Dark mode por classe; a preferência fica salva no `localStorage` (chave `theme`).
+- **Bilíngue PT/EN**: botão de idioma na barra (`LanguageSwitcher.vue`), estado global em `src/composables/useIdioma.js`. Salvo no `localStorage` (chave `idioma`, padrão `pt`) e atualiza o `lang` do `<html>`.
+  - Textos fixos da interface: `src/data/ui.js`
+  - Perfil, experiência e projetos: `src/data/perfil.js` (PT) e `src/data/perfil.en.js` (EN)
+  - Slides do carrossel: `src/data/slides.js` (PT) e `src/data/slides.en.js` (EN)
+- **Carrossel em cubo 3D**: seção Experiência usa Swiper com `EffectCube`, loop, autoplay de 15 s, setas e paginação. O título, as tags e a descrição ao lado acompanham o slide ativo.
+- **Zoom nas imagens do carrossel**: módulo `Zoom` do Swiper. Dê duplo clique (ou faça pinça no celular) na imagem para ampliar; repita para voltar.
+- **Projetos**: grade de cards (2 colunas a partir de `md`; se o total for ímpar, o último fica centralizado). Os prints usam `object-contain`, então aparecem inteiros, sem corte. Projeto sem `imagem` mostra um espaço reservado com ícone.
+
+## Rodar localmente
+
+Requer Node.js 20+ (o deploy usa Node 22).
 
 ```bash
 npm install
 npm run dev
 ```
 
-## Imagens do carrossel
-
-Coloque os arquivos em `public/storage/` com estes nomes (os mesmos do projeto original):
+Abra a URL que o Vite mostrar no terminal. Como o `base` padrão é `/portfolio-vue3/`, ela fica assim:
 
 ```
-nuvemshop_old.jpeg          nuvemshop_new.jpeg          mercado_livre_new.jpeg
-woocommerce.jpeg            sales_agenda_old.jpeg       tree_view_new.png
-consolidated_sales_OLD.jpg  financial_management_new.png stock_adjustment_new.png
-product_registration_old.jpg product_registration_new.jpeg margin_calculator_new.png
-interest_calculator_new.png financial_control_new.png
+http://localhost:5173/portfolio-vue3/
 ```
 
-Enquanto uma imagem não existir, o slide mostra "Imagem indisponível". A lista de slides fica em `src/data/slides.js`.
+Não é preciso baixar nem copiar nenhuma imagem: todas já estão versionadas no repositório (veja abaixo).
 
-## Deploy no GitHub Pages (gratuito)
+## Imagens (`public/storage/`)
 
-1. Crie um repositório no GitHub e envie este projeto para a branch `main`.
+Tudo que está em `public/` é servido como está, na raiz do site. As imagens já fazem parte do repositório:
+
+```
+public/storage/
+├── calculadora-juros-compostos.jpeg   ┐
+├── checkout-rede-itau-api.jpeg        │
+├── integracao-ifood.jpeg              │
+├── integracao-shopee.jpeg             │  slides do carrossel
+├── integracao-shopify.jpeg            │  (src/data/slides*.js)
+├── integracao-vendizap.jpeg           │
+├── mercado-livre-integracao.jpeg      │
+├── nuvemshop-integracao.jpeg          ┘
+└── projetos/                             cards da seção Projetos
+    ├── api-financeira.jpeg               (src/data/perfil*.js)
+    ├── dashboard-financeiro.jpeg
+    ├── dms.jpeg
+    ├── financial-tools.jpeg
+    ├── jogo-memoria.jpeg
+    ├── maktub.jpeg
+    └── portfolio.jpeg
+```
+
+Os arquivos de dados montam o caminho com o `base` do Vite, então a mesma referência funciona no `npm run dev` e no GitHub Pages:
+
+```js
+// src/data/slides.js
+const img = file => `${import.meta.env.BASE_URL}storage/${file}`;
+// src/data/perfil.js
+const imgProjeto = file => `${import.meta.env.BASE_URL}storage/projetos/${file}`;
+```
+
+**Para trocar ou adicionar uma imagem:**
+
+1. Coloque o arquivo em `public/storage/` (slide) ou `public/storage/projetos/` (projeto).
+2. Referencie só o nome do arquivo no item correspondente, **nas duas versões de idioma**:
+   - slide: `image: img('meu-arquivo.jpeg')` em `slides.js` e `slides.en.js`
+   - projeto: `imagem: imgProjeto('meu-arquivo.jpeg')` em `perfil.js` e `perfil.en.js`
+3. Não use caminho absoluto (`/storage/...`): ele quebra no GitHub Pages, onde o site fica em `/portfolio-vue3/`.
+
+Se um arquivo de slide não existir ou o nome estiver errado, o slide mostra "Imagem indisponível" em vez de quebrar.
+
+## Deploy no GitHub Pages
+
+1. Envie o projeto para a branch `main` de um repositório no GitHub.
 2. Em **Settings → Pages → Build and deployment**, escolha **Source: GitHub Actions**.
-3. Cada push na `main` roda `.github/workflows/deploy.yml`, que gera o build com
-   `VITE_BASE=/<nome-do-repositório>/` e publica a pasta `dist`.
+3. Cada push na `main` roda `.github/workflows/deploy.yml`, que faz o build com `VITE_BASE=/<nome-do-repositório>/` e publica a pasta `dist`.
 
 O site fica em `https://<usuario>.github.io/<nome-do-repositório>/`.
-Para um repositório `<usuario>.github.io`, troque `VITE_BASE` no workflow por `/`.
+
+- Fora do workflow, o `base` padrão vem de `vite.config.js` (`/portfolio-vue3/`). Se renomear o repositório, ajuste esse valor ou defina `VITE_BASE`.
+- Para um repositório `<usuario>.github.io`, troque `VITE_BASE` no workflow por `/`.
+
+## Estrutura
+
+```
+src/
+├── views/         Home e as duas calculadoras
+├── layouts/       NavBar e Footer
+├── components/    inputs, seletores de tema/idioma, animação Three.js (animations/GoldenSpiral.vue)
+├── composables/   useIdioma.js (idioma global)
+├── data/          textos e conteúdo em PT/EN
+├── directives/    v-reveal (animação ao rolar)
+├── router/        rotas (hash history)
+└── utils/         formatadores
+```
