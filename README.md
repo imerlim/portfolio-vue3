@@ -22,8 +22,12 @@ Qualquer outra rota redireciona para `#/`.
   - Perfil, experiência e projetos: `src/data/perfil.js` (PT) e `src/data/perfil.en.js` (EN)
   - Slides do carrossel: `src/data/slides.js` (PT) e `src/data/slides.en.js` (EN)
 - **Carrossel em cubo 3D**: seção Experiência usa Swiper com `EffectCube`, loop, autoplay de 15 s, setas e paginação. O título, as tags e a descrição ao lado acompanham o slide ativo.
-- **Zoom nas imagens do carrossel**: módulo `Zoom` do Swiper. Dê duplo clique (ou faça pinça no celular) na imagem para ampliar; repita para voltar.
-- **Projetos**: grade de cards (2 colunas a partir de `md`; se o total for ímpar, o último fica centralizado). Os prints usam `object-contain`, então aparecem inteiros, sem corte. Projeto sem `imagem` mostra um espaço reservado com ícone.
+- **Projetos**: grade de cards (2 colunas a partir de `md`; se o total for ímpar, o último fica centralizado). A miniatura preenche o card (`object-cover`); o print inteiro aparece no modal. Projeto sem `imagem` mostra um espaço reservado com ícone.
+- **Modal de zoom (lightbox)**: clicar num slide do carrossel ou na imagem de um projeto abre a imagem em tela cheia (`Home.vue`). Enquanto o modal está aberto, o autoplay do carrossel pausa e a página não rola.
+  - Zoom de 1x a 4x: botões +/−/restaurar, roda do mouse, duplo clique (2x ↔ 1x) ou teclas `+`, `-` e `0`
+  - Com zoom, arraste para mover a imagem
+  - Fecha com `Esc`, com o botão de fechar ou clicando fora da imagem; o foco volta ao elemento que abriu o modal
+- **Foto de perfil**: seção Sobre, em `public/storage/perfil/foto-perfil.jpg` (campo `foto` em `perfil.js`/`perfil.en.js`). Sem foto, aparece um espaço reservado.
 
 ## Rodar localmente
 
@@ -56,6 +60,8 @@ public/storage/
 ├── integracao-vendizap.jpeg           │
 ├── mercado-livre-integracao.jpeg      │
 ├── nuvemshop-integracao.jpeg          ┘
+├── perfil/
+│   └── foto-perfil.jpg                   foto da seção Sobre (src/data/perfil*.js)
 └── projetos/                             cards da seção Projetos
     ├── api-financeira.jpeg               (src/data/perfil*.js)
     ├── dashboard-financeiro.jpeg
@@ -82,6 +88,7 @@ const imgProjeto = file => `${import.meta.env.BASE_URL}storage/projetos/${file}`
    - slide: `image: img('meu-arquivo.jpeg')` em `slides.js` e `slides.en.js`
    - projeto: `imagem: imgProjeto('meu-arquivo.jpeg')` em `perfil.js` e `perfil.en.js`
 3. Não use caminho absoluto (`/storage/...`): ele quebra no GitHub Pages, onde o site fica em `/portfolio-vue3/`.
+4. Prefira JPEG otimizado (ex.: ~800–1600 px de largura). O arquivo vai junto no build, então imagens de vários MB deixam o site lento.
 
 Se um arquivo de slide não existir ou o nome estiver errado, o slide mostra "Imagem indisponível" em vez de quebrar.
 
