@@ -9,7 +9,7 @@ export const sobre = {
     local: 'Rio de Janeiro, RJ — Brazil',
     foto: `${import.meta.env.BASE_URL}storage/perfil/foto-perfil.jpg`,
     paragrafos: [
-        'Full-Stack Developer with 5+ years of hands-on experience building scalable systems with Laravel, Vue.js and modern web technologies. Specialized in ERP integrations, marketplace automation and high-performance APIs.',
+        'Full-Stack Developer with 6+ years of hands-on experience building scalable systems with Laravel, Vue.js and modern web technologies. Specialized in ERP integrations, marketplace automation and high-performance APIs.',
         'I help companies scale ERP and e-commerce operations: robust back-end architectures, marketplace integrations and workflow automation that eliminates manual processes. From the data synchronization engine to the SPA with Vue and React, my focus is clean architecture, performance and continuous learning.',
     ],
     formacao: [

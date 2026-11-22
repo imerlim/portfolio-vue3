@@ -15,7 +15,7 @@ export const sobre = {
     foto: `${import.meta.env.BASE_URL}storage/perfil/foto-perfil.jpg`,
     // Resumo do CV_pt + resumo do LinkedIn
     paragrafos: [
-        'Desenvolvedor Full-Stack com +5 anos de experiência prática na construção de sistemas escaláveis com Laravel, Vue.js e tecnologias web modernas. Especializado em integrações de ERP, automação de marketplaces e APIs de alta performance.',
+        'Desenvolvedor Full-Stack com +6 anos de experiência prática na construção de sistemas escaláveis com Laravel, Vue.js e tecnologias web modernas. Especializado em integrações de ERP, automação de marketplaces e APIs de alta performance.',
         'Ajudo empresas a escalar operações de ERP e e-commerce: arquiteturas back-end robustas, integrações com marketplaces e automação de fluxos que eliminam processos manuais. Do motor de sincronização de dados à SPA com Vue e React, meu foco é clean architecture, performance e aprendizado contínuo.',
     ],
     // LinkedIn / CV
