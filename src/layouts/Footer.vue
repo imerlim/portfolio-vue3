@@ -1,3 +1,12 @@
+<script setup>
+import { computed } from 'vue';
+import { ui } from '@/data/ui';
+import { useIdioma } from '@/composables/useIdioma';
+
+const { porIdioma } = useIdioma();
+const t = computed(() => porIdioma(ui).footer);
+</script>
+
 <template>
     <footer class="bg-white dark:bg-slate-950 border-t border-black dark:border-white">
         <div class="grid grid-cols-1 gap-x-8 gap-y-8 px-4 py-6 sm:px-6 md:grid-cols-6 lg:px-8">
@@ -45,7 +54,7 @@
                     </a>
                 </div>
                 <div class="flex flex-col items-center lg:items-start">
-                    <p class="text-xl text-slate-900 dark:text-white">E-mail para contato</p>
+                    <p class="text-xl text-slate-900 dark:text-white">{{ t.emailTitulo }}</p>
                     <p class="text-lg text-slate-900 dark:text-white">imerlimdev@gmail.com</p>
                 </div>
             </div>

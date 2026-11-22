@@ -13,10 +13,10 @@
                             v-model="selectTipoMargem"
                             id="selectTipoMargem"
                             name="selectTipoMargem"
-                            label="Tipo de margem"
+                            :label="t.tipoMargem"
                             :options="[
-                                { label: 'Margem sobre venda', value: 'mlv' },
-                                { label: 'Margem sobre custo', value: 'mlc' },
+                                { label: t.opcaoVenda, value: 'mlv' },
+                                { label: t.opcaoCusto, value: 'mlc' },
                             ]"
                         />
                     </div>
@@ -27,7 +27,7 @@
                             @change="calculaPrecoVenda()"
                             :formata="true"
                             v-model="custo"
-                            label="Preço de custo"
+                            :label="t.custo"
                             id="custo"
                             name="custo"
                             maxlength="10"
@@ -42,7 +42,7 @@
                             @change="calculaPrecoVenda()"
                             :formata="true"
                             v-model="margem"
-                            label="Margem"
+                            :label="t.margem"
                             id="margem"
                             name="margem"
                         >
@@ -56,7 +56,7 @@
                             @change="calculaMargens()"
                             :formata="true"
                             v-model="precoVenda"
-                            label="Preço de venda"
+                            :label="t.precoVenda"
                             id="precoVenda"
                             name="precoVenda"
                         >
@@ -70,17 +70,17 @@
                             @change="discount()"
                             :formata="true"
                             v-model="taxaDesconto"
-                            label="Desconto / taxa"
+                            :label="t.taxaDesconto"
                             id="taxaDesconto"
                             name="taxaDesconto"
-                            title="Taxa sobre o preço de venda (ex.: comissão de marketplace ou iFood)"
+                            :title="t.taxaDescontoTitle"
                         >
                             <template #append><span class="text-base">%</span></template>
                         </CustomInput>
                     </div>
 
                     <div class="col-span-1">
-                        <CustomInput disabled v-model="lucro" :formata="true" label="Lucro" id="lucro" name="lucro">
+                        <CustomInput disabled v-model="lucro" :formata="true" :label="t.lucro" id="lucro" name="lucro">
                             <template #prepend><span class="text-base">R$</span></template>
                         </CustomInput>
                     </div>
@@ -90,7 +90,7 @@
                             disabled
                             v-model="margemLiquida"
                             :formata="true"
-                            label="Margem líquida"
+                            :label="t.margemLiquida"
                             id="margemLiquida"
                             name="margemLiquida"
                         >
@@ -106,15 +106,26 @@
 <script>
 import CustomInput from '@/components/CustomInput.vue';
 import CustomSelect from '@/components/CustomSelect.vue';
+import { ui } from '@/data/ui';
+import { porIdioma } from '@/composables/useIdioma';
 
 // Cálculo 100% no navegador — sem backend.
 export default {
     name: 'CalculadoraMargem',
     components: { CustomInput, CustomSelect },
 
+    computed: {
+        // Textos no idioma ativo (reativo ao estado global de useIdioma)
+        t() {
+            return porIdioma(ui).margem;
+        },
+        tituloMargem() {
+            return this.selectTipoMargem === 'mlc' ? this.t.tituloCusto : this.t.tituloVenda;
+        },
+    },
+
     data() {
         return {
-            tituloMargem: 'Margem sobre o preço de venda',
             selectTipoMargem: 'mlv',
             custo: null,
             margem: null,
@@ -133,7 +144,6 @@ export default {
             this.precoVenda = null;
             this.lucro = null;
             this.taxaDesconto = null;
-            this.tituloMargem = this.selectTipoMargem === 'mlc' ? 'Margem sobre o preço de custo' : 'Margem sobre o preço de venda';
         },
 
         // Custo ou margem alterados -> calcula o preço de venda
@@ -143,17 +153,17 @@ export default {
 
             if (custo <= 0) {
                 this.custo = null;
-                return this.$msg.warning('O custo deve ser maior que 0.');
+                return this.$msg.warning(this.t.avisos.custoMaiorZero);
             }
             if (margem <= 0) {
                 this.margem = null;
                 this.margemLiquida = null;
-                return this.$msg.warning('A margem deve ser maior que 0.');
+                return this.$msg.warning(this.t.avisos.margemMaiorZero);
             }
             if (this.selectTipoMargem === 'mlv' && margem >= 100) {
                 this.margem = null;
                 this.margemLiquida = null;
-                return this.$msg.warning('A margem sobre venda deve ser menor que 100.');
+                return this.$msg.warning(this.t.avisos.margemVendaMenor100);
             }
 
             if (custo > 0 && margem > 0) {
@@ -179,11 +189,11 @@ export default {
 
             if (!(custo > 0)) {
                 this.precoVenda = null;
-                return this.$msg.warning('O custo deve ser maior que 0.');
+                return this.$msg.warning(this.t.avisos.custoMaiorZero);
             }
             if (custo > precoVenda) {
                 this.precoVenda = null;
-                return this.$msg.warning('O preço de venda deve ser maior que o preço de custo.');
+                return this.$msg.warning(this.t.avisos.vendaMaiorCusto);
             }
 
             if (precoVenda > custo) {
@@ -208,7 +218,7 @@ export default {
 
             if (taxa >= 1) {
                 this.taxaDesconto = null;
-                return this.$msg.warning('A taxa deve ser menor que 100%.');
+                return this.$msg.warning(this.t.avisos.taxaMenor100);
             }
 
             if (isNaN(preco) || preco <= 0 || isNaN(custo) || custo < 0) {

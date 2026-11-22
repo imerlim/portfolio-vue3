@@ -1,9 +1,30 @@
 <script setup>
-import { onMounted, onBeforeUnmount, ref } from 'vue';
+import { computed, onMounted, onBeforeUnmount, ref } from 'vue';
 import { animate, svg } from 'animejs';
 import { gsap } from 'gsap';
 import GoldenSpiral from '@/components/animations/GoldenSpiral.vue';
-import { slides } from '@/data/slides';
+import { slides as slidesPt } from '@/data/slides';
+import { slides as slidesEn } from '@/data/slides.en';
+import * as perfilPt from '@/data/perfil';
+import * as perfilEn from '@/data/perfil.en';
+import { ui } from '@/data/ui';
+import { useIdioma } from '@/composables/useIdioma';
+
+// Conteúdo reativo ao idioma. Listas usam índice como key para não recriar os elementos
+// (mantém o v-reveal já revelado e o Swiper intacto ao trocar de idioma).
+const { porIdioma } = useIdioma();
+const t = computed(() => porIdioma(ui).home);
+const slides = computed(() => porIdioma({ pt: slidesPt, en: slidesEn }));
+const perfil = computed(() => porIdioma({ pt: perfilPt, en: perfilEn }));
+const headline = computed(() => perfil.value.headline);
+const sobre = computed(() => perfil.value.sobre);
+const stack = computed(() => perfil.value.stack);
+const arquitetura = computed(() => perfil.value.arquitetura);
+const atuacao = computed(() => perfil.value.atuacao);
+const projetos = computed(() => perfil.value.projetos);
+const ferramentas = computed(() => perfil.value.ferramentas);
+const contatos = computed(() => perfil.value.contatos);
+import { PhotoIcon, UserIcon, ArrowTopRightOnSquareIcon, MapPinIcon, AcademicCapIcon, LanguageIcon } from '@heroicons/vue/24/outline';
 
 // Swiper (componentes Vue + estilos + módulos)
 import { Swiper, SwiperSlide } from 'swiper/vue';
@@ -57,7 +78,7 @@ onBeforeUnmount(() => {
 
 <template>
     <div class="w-full">
-        <section class="relative w-full h-screen overflow-hidden bg-slate-100 dark:bg-slate-900">
+        <section id="inicio" class="scroll-section relative w-full h-screen overflow-hidden bg-slate-100 dark:bg-slate-900">
             <GoldenSpiral class="z-10" />
 
             <div class="text-center mt-32 relative z-20">
@@ -75,25 +96,132 @@ onBeforeUnmount(() => {
                     </g>
                 </svg>
                 <p class="js-subtitle text-lg mt-4 px-4 text-white">
-                    Desenvolvedor Full-Stack. Construindo soluções escaláveis com arquitetura moderna.
+                    {{ headline }}
                 </p>
             </div>
         </section>
 
+        <!-- Sobre -->
+        <section id="sobre" class="scroll-section bg-white dark:bg-slate-850 py-20">
+            <div class="container mx-auto px-4 sm:px-16">
+                <div class="grid grid-cols-1 items-center gap-10 md:grid-cols-3 lg:px-8">
+                    <!-- Espaço reservado para a foto (trocar pelo <img> quando houver) -->
+                    <div v-reveal class="mx-auto w-full max-w-xs md:col-span-1">
+                        <div
+                            role="img"
+                            :aria-label="t.fotoAria"
+                            class="flex aspect-[4/5] w-full flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-slate-300 bg-slate-100 text-slate-400 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-500"
+                        >
+                            <UserIcon class="size-16" aria-hidden="true" />
+                            <span class="text-sm">{{ t.foto }}</span>
+                        </div>
+                    </div>
+
+                    <div v-reveal="{ delay: 0.1 }" class="md:col-span-2">
+                        <h2 class="text-3xl font-semibold tracking-tight text-slate-950 sm:text-5xl dark:text-white">{{ t.sobre }}</h2>
+                        <p class="mt-4 text-xl font-semibold text-sky-600">{{ sobre.titulo }}</p>
+                        <p class="mt-1 text-sm font-medium text-slate-500 dark:text-slate-400">{{ sobre.destaque }}</p>
+                        <p class="mt-2 inline-flex items-center gap-1 text-sm text-slate-500 dark:text-slate-400">
+                            <MapPinIcon class="size-4" aria-hidden="true" /> {{ sobre.local }}
+                        </p>
+                        <p
+                            v-for="(p, i) in sobre.paragrafos"
+                            :key="i"
+                            class="mt-4 text-base leading-relaxed text-gray-600 lg:text-lg dark:text-gray-400"
+                        >
+                            {{ p }}
+                        </p>
+
+                        <div class="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2">
+                            <div>
+                                <h3 class="flex items-center gap-2 font-bold text-slate-900 dark:text-white">
+                                    <AcademicCapIcon class="size-5 text-sky-600" aria-hidden="true" /> {{ t.formacao }}
+                                </h3>
+                                <ul class="mt-3 space-y-3">
+                                    <li v-for="(f, i) in sobre.formacao" :key="i">
+                                        <p class="font-semibold text-slate-800 dark:text-slate-200">{{ f.titulo }}</p>
+                                        <p class="text-sm text-gray-600 dark:text-gray-400">{{ f.local }} · {{ f.periodo }}</p>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h3 class="flex items-center gap-2 font-bold text-slate-900 dark:text-white">
+                                    <LanguageIcon class="size-5 text-sky-600" aria-hidden="true" /> {{ t.idiomas }}
+                                </h3>
+                                <ul class="mt-3 space-y-1">
+                                    <li v-for="(l, i) in sobre.idiomas" :key="i" class="text-gray-700 dark:text-gray-300">
+                                        <span class="font-semibold">{{ l.nome }}</span> — {{ l.nivel }}
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stack e arquitetura -->
+        <section id="stack" class="scroll-section bg-slate-100 dark:bg-slate-900 py-20">
+            <div class="container mx-auto px-4 sm:px-16 lg:px-24">
+                <h2
+                    v-reveal
+                    class="text-balance text-center text-3xl font-semibold tracking-tight text-slate-950 sm:text-5xl dark:text-white"
+                >
+                    {{ t.stack }}
+                </h2>
+
+                <div class="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                    <div
+                        v-for="(g, i) in stack"
+                        :key="i"
+                        v-reveal="{ delay: i * 0.08 }"
+                        class="rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-900/5 dark:bg-slate-850 dark:ring-white/10"
+                    >
+                        <h3 class="text-lg font-bold text-sky-600">{{ g.grupo }}</h3>
+                        <div class="mt-3 flex flex-wrap gap-2">
+                            <span
+                                v-for="(item, j) in g.itens"
+                                :key="j"
+                                class="rounded-md border border-sky-200 bg-sky-50 px-2 py-1 text-xs font-semibold text-sky-800 dark:border-sky-800 dark:bg-sky-900/30 dark:text-sky-300"
+                            >
+                                {{ item }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <h3 v-reveal class="mt-16 text-center text-2xl font-semibold text-slate-950 dark:text-white">
+                    {{ t.padroes }}
+                </h3>
+                <div class="mt-8 grid grid-cols-1 gap-6 md:grid-cols-2">
+                    <div
+                        v-for="(a, i) in arquitetura"
+                        :key="i"
+                        v-reveal="{ delay: i * 0.08 }"
+                        class="rounded-xl border-l-4 border-sky-600 bg-white p-5 shadow-sm dark:bg-slate-850"
+                    >
+                        <h4 class="font-bold text-slate-900 dark:text-white">{{ a.titulo }}</h4>
+                        <p class="mt-2 text-gray-600 dark:text-gray-400">{{ a.texto }}</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <section
-            class="relative isolate overflow-hidden text-white dark:text-slate-300 bg-slate-100 dark:bg-slate-900 min-h-screen pt-32 sm:px-5 sm:pt-0"
+            id="experiencia"
+            class="scroll-section relative isolate overflow-hidden text-white dark:text-slate-300 bg-slate-100 dark:bg-slate-900 min-h-screen pt-32 sm:px-5 sm:pt-0"
         >
             <div class="container mx-auto sm:px-16">
                 <div class="grid grid-cols-1 gap-x-8 gap-y-8 px-4 py-11 sm:px-6 md:grid-cols-3 lg:px-8">
-                    <div class="md:col-span-3">
+                    <div v-reveal class="md:col-span-3">
                         <h2
                             class="text-balance text-center text-3xl font-semibold tracking-tight text-slate-950 sm:text-5xl dark:text-white"
                         >
-                            Experiência Profissional
+                            {{ t.experiencia }}
                         </h2>
                     </div>
 
-                    <div class="md:col-span-2 w-full px-4 lg:pr-10 lg:mt-3">
+                    <div v-reveal="{ delay: 0.1, y: 32 }" class="md:col-span-2 w-full px-4 lg:pr-10 lg:mt-3">
                         <swiper
                             :slidesPerView="1"
                             :style="{
@@ -125,15 +253,15 @@ onBeforeUnmount(() => {
                         </swiper>
                     </div>
 
-                    <div class="md:col-span-1 flex flex-col lg:pb-0">
+                    <div v-reveal="{ delay: 0.2, y: 32 }" class="md:col-span-1 flex flex-col lg:pb-0">
                         <h3 class="text-2xl font-bold text-sky-600 transition-all">
                             {{ slides[activeIndex].title }}
                         </h3>
 
                         <div class="mt-4 flex flex-wrap gap-2">
                             <span
-                                v-for="tag in slides[activeIndex].tags"
-                                :key="tag"
+                                v-for="(tag, j) in slides[activeIndex].tags"
+                                :key="j"
                                 class="px-2 py-1 text-xs font-semibold rounded-md bg-sky-300/80 text-sky-800 dark:bg-sky-900/30 dark:text-sky-300 border border-sky-200 dark:border-sky-800"
                             >
                                 {{ tag }}
@@ -146,6 +274,130 @@ onBeforeUnmount(() => {
                             </p>
                         </div>
                     </div>
+                </div>
+
+                <!-- Atuação (LinkedIn + currículos) -->
+                <div class="px-4 pb-20 sm:px-6 lg:px-8">
+                    <div v-reveal class="border-l-4 border-sky-600 pl-4">
+                        <h3 class="text-2xl font-bold text-slate-950 dark:text-white">{{ atuacao.cargo }}</h3>
+                        <p class="mt-1 text-lg font-semibold text-sky-600">{{ atuacao.empresa }}</p>
+                        <p class="text-sm text-slate-500 dark:text-slate-400">{{ atuacao.periodo }} · {{ atuacao.local }}</p>
+                    </div>
+                    <div class="mt-8 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+                        <div
+                            v-for="(d, i) in atuacao.destaques"
+                            :key="i"
+                            v-reveal="{ delay: (i % 3) * 0.08 }"
+                            class="rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-900/5 dark:bg-slate-850 dark:ring-white/10"
+                        >
+                            <h4 class="font-bold text-slate-900 dark:text-white">{{ d.titulo }}</h4>
+                            <p class="mt-2 text-sm leading-relaxed text-gray-600 dark:text-gray-400">{{ d.texto }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Projetos (repositórios públicos do GitHub + projetos dos currículos) -->
+        <section id="projetos" class="scroll-section bg-white dark:bg-slate-850 py-20">
+            <div class="container mx-auto px-4 sm:px-16 lg:px-24">
+                <h2
+                    v-reveal
+                    class="text-balance text-center text-3xl font-semibold tracking-tight text-slate-950 sm:text-5xl dark:text-white"
+                >
+                    {{ t.projetos }}
+                </h2>
+                <p v-reveal class="mt-4 text-center text-gray-600 dark:text-gray-400">{{ t.projetosSub }}</p>
+
+                <div class="mt-12 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
+                    <article
+                        v-for="(p, i) in projetos"
+                        :key="i"
+                        v-reveal="{ delay: (i % 3) * 0.08 }"
+                        class="flex flex-col overflow-hidden rounded-xl bg-slate-100 shadow-sm ring-1 ring-slate-900/5 dark:bg-slate-900 dark:ring-white/10"
+                    >
+                        <!-- Espaço reservado para imagem do projeto -->
+                        <div
+                            role="img"
+                            :aria-label="t.projetoImgAria(p.nome)"
+                            class="flex aspect-video items-center justify-center border-b-2 border-dashed border-slate-300 bg-slate-200/60 text-slate-400 dark:border-slate-700 dark:bg-slate-800/60 dark:text-slate-500"
+                        >
+                            <PhotoIcon class="size-10" aria-hidden="true" />
+                        </div>
+                        <div class="flex flex-1 flex-col p-5">
+                            <h3 class="text-lg font-bold text-slate-900 dark:text-white">{{ p.nome }}</h3>
+                            <p class="mt-2 flex-1 text-sm text-gray-600 dark:text-gray-400">{{ p.descricao }}</p>
+                            <div class="mt-4 flex flex-wrap gap-2">
+                                <span
+                                    v-for="(tag, j) in p.tags"
+                                    :key="j"
+                                    class="rounded-md bg-sky-100 px-2 py-0.5 text-xs font-semibold text-sky-800 dark:bg-sky-900/30 dark:text-sky-300"
+                                >
+                                    {{ tag }}
+                                </span>
+                            </div>
+                            <div v-if="p.repo || p.demo" class="mt-4 flex gap-4 text-sm font-semibold">
+                                <a v-if="p.repo" :href="p.repo" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-sky-600 hover:text-sky-500">
+                                    {{ t.codigo }} <ArrowTopRightOnSquareIcon class="size-4" aria-hidden="true" />
+                                </a>
+                                <a
+                                    v-if="p.demo"
+                                    :href="p.demo"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    class="inline-flex items-center gap-1 text-sky-600 hover:text-sky-500"
+                                >
+                                    {{ t.demo }} <ArrowTopRightOnSquareIcon class="size-4" aria-hidden="true" />
+                                </a>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <!-- Ferramentas (calculadoras deste site) -->
+        <section id="ferramentas" class="scroll-section bg-slate-100 dark:bg-slate-900 py-20">
+            <div class="container mx-auto px-4 sm:px-16 lg:px-24">
+                <h2
+                    v-reveal
+                    class="text-balance text-center text-3xl font-semibold tracking-tight text-slate-950 sm:text-5xl dark:text-white"
+                >
+                    {{ t.ferramentas }}
+                </h2>
+                <div class="mx-auto mt-12 grid max-w-4xl grid-cols-1 gap-6 md:grid-cols-2">
+                    <RouterLink
+                        v-for="(f, i) in ferramentas"
+                        :key="f.to"
+                        v-reveal="{ delay: i * 0.08 }"
+                        :to="f.to"
+                        class="group rounded-xl bg-white p-6 shadow-sm ring-1 ring-slate-900/5 transition hover:ring-sky-500 dark:bg-slate-850 dark:ring-white/10"
+                    >
+                        <h3 class="text-lg font-bold text-slate-900 group-hover:text-sky-600 dark:text-white">{{ f.nome }}</h3>
+                        <p class="mt-2 text-gray-600 dark:text-gray-400">{{ f.descricao }}</p>
+                        <span class="mt-4 inline-block text-sm font-semibold text-sky-600">{{ t.abrir }}</span>
+                    </RouterLink>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contato -->
+        <section id="contato" class="scroll-section bg-white dark:bg-slate-850 py-20">
+            <div class="container mx-auto px-4 text-center sm:px-16">
+                <h2 v-reveal class="text-3xl font-semibold tracking-tight text-slate-950 sm:text-5xl dark:text-white">{{ t.contato }}</h2>
+                <div class="mx-auto mt-10 grid max-w-3xl grid-cols-1 gap-4 sm:grid-cols-2">
+                    <a
+                        v-for="(c, i) in contatos"
+                        :key="i"
+                        v-reveal="{ delay: i * 0.06 }"
+                        :href="c.href"
+                        :target="c.href.startsWith('mailto:') ? undefined : '_blank'"
+                        rel="noopener noreferrer"
+                        class="rounded-xl bg-slate-100 p-5 text-left ring-1 ring-slate-900/5 transition hover:ring-sky-500 dark:bg-slate-900 dark:ring-white/10"
+                    >
+                        <span class="block text-sm font-semibold text-sky-600">{{ c.nome }}</span>
+                        <span class="mt-1 block break-all text-slate-900 dark:text-white">{{ c.valor }}</span>
+                    </a>
                 </div>
             </div>
         </section>

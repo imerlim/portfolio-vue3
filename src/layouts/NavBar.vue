@@ -1,5 +1,6 @@
 <script setup>
-import { ref } from 'vue';
+import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 import {
     Dialog,
     DialogPanel,
@@ -15,51 +16,113 @@ import { Bars3Icon, PresentationChartLineIcon, CalculatorIcon, XMarkIcon } from 
 import { ChevronDownIcon } from '@heroicons/vue/20/solid';
 import ThemeSwitcher from '@/components/ThemeSwitcher.vue';
 import GlobalMsg from '@/components/GlobalMsg.vue';
+import LanguageSwitcher from '@/components/LanguageSwitcher.vue';
+import { ui } from '@/data/ui';
+import { useIdioma } from '@/composables/useIdioma';
 import logo from '@/assets/logo.png';
 
 const mobileMenuOpen = ref(false);
+const route = useRoute();
+const router = useRouter();
+const { porIdioma } = useIdioma();
+const t = computed(() => porIdioma(ui).nav);
 
-const projetos = [
-    {
-        name: 'Calculadora de Margem de Lucro',
-        description: 'Calcula a margem de lucro de produtos',
-        to: '/calculadora-margem',
-        icon: CalculatorIcon,
-    },
-    {
-        name: 'Calculadora de Juros Compostos',
-        description: 'Planeje sua aposentadoria com investimentos',
-        to: '/calculadora-juros-compostos',
-        icon: PresentationChartLineIcon,
-    },
+// Seções da Home. Com hash history, href="#id" trocaria a rota; por isso a rolagem é via JS.
+// O rótulo vem de ui.js (t.value[id])
+const secoes = ['inicio', 'sobre', 'stack', 'experiencia', 'projetos', 'contato'].map(id => ({ id }));
+
+// Destaca a seção visível (só na Home)
+const secaoAtiva = ref('inicio');
+let observer = null;
+
+const observarSecoes = async (tentativa = 0) => {
+    observer?.disconnect();
+    observer = null;
+    if (route.name !== 'home') {
+        secaoAtiva.value = null;
+        return;
+    }
+    await nextTick();
+    // A Home é carregada sob demanda: tenta de novo até as seções existirem no DOM
+    if (!document.getElementById(secoes.at(-1).id)) {
+        if (tentativa < 60) requestAnimationFrame(() => observarSecoes(tentativa + 1));
+        return;
+    }
+    observer = new IntersectionObserver(
+        entries => {
+            entries.forEach(e => {
+                if (e.isIntersecting) secaoAtiva.value = e.target.id;
+            });
+        },
+        { rootMargin: '-45% 0px -50% 0px' }
+    );
+    secoes.forEach(s => {
+        const el = document.getElementById(s.id);
+        if (el) observer.observe(el);
+    });
+};
+
+watch(() => route.name, () => observarSecoes(), { immediate: true });
+onBeforeUnmount(() => observer?.disconnect());
+
+const irPara = async id => {
+    mobileMenuOpen.value = false;
+    if (route.name !== 'home') {
+        await router.push({ name: 'home' });
+        await nextTick();
+        // Espera o scrollBehavior do router ({ top: 0 }) ser aplicado antes de rolar até a seção
+        await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+    }
+    const reduzir = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    document.getElementById(id)?.scrollIntoView({ behavior: reduzir ? 'auto' : 'smooth', block: 'start' });
+};
+
+const rotasFerramentas = [
+    { to: '/calculadora-margem', icon: CalculatorIcon },
+    { to: '/calculadora-juros-compostos', icon: PresentationChartLineIcon },
 ];
+const projetos = computed(() => rotasFerramentas.map((r, i) => ({ ...r, ...porIdioma(ui).ferramentasMenu[i] })));
 </script>
 
 <template>
     <header class="bg-white dark:bg-slate-950 fixed top-0 z-50 w-full p-2">
         <GlobalMsg />
         <div class="container mx-auto sm:px-16">
-            <nav class="mx-auto flex items-center justify-between py-2 sm:py-5" aria-label="Navegação principal">
+            <nav class="mx-auto flex items-center justify-between py-2 sm:py-5" :aria-label="t.navegacao">
                 <div class="flex lg:flex-1 sm:ml-5">
                     <RouterLink to="/" class="-m-1.5 p-1.5">
-                        <span class="sr-only">Igor Merlim — Início</span>
+                        <span class="sr-only">{{ t.logo }}</span>
                         <img class="h-8 w-auto" :src="logo" alt="" />
                     </RouterLink>
                 </div>
-                <div class="flex lg:hidden">
+                <div class="flex items-center gap-4 lg:hidden">
+                    <LanguageSwitcher />
                     <button
                         type="button"
                         class="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-gray-700 dark:text-gray-400"
                         @click="mobileMenuOpen = true"
                     >
-                        <span class="sr-only">Abrir menu principal</span>
+                        <span class="sr-only">{{ t.abrirMenu }}</span>
                         <Bars3Icon class="size-6" aria-hidden="true" />
                     </button>
                 </div>
-                <PopoverGroup class="hidden lg:flex lg:gap-x-12">
+                <PopoverGroup class="hidden lg:flex lg:gap-x-7">
+                    <button
+                        v-for="secao in secoes"
+                        :key="secao.id"
+                        type="button"
+                        :aria-current="secaoAtiva === secao.id ? 'location' : undefined"
+                        :class="[
+                            secaoAtiva === secao.id ? 'text-sky-600 dark:text-sky-400' : 'text-gray-900 dark:text-white',
+                            'text-sm/6 font-semibold hover:text-sky-600 dark:hover:text-sky-400',
+                        ]"
+                        @click="irPara(secao.id)"
+                    >
+                        {{ t[secao.id] }}
+                    </button>
                     <Popover class="relative" v-slot="{ close }">
                         <PopoverButton class="flex items-center gap-x-1 text-sm/6 font-semibold text-gray-900 dark:text-white">
-                            Projetos
+                            {{ t.ferramentas }}
                             <ChevronDownIcon class="size-5 flex-none text-gray-400 dark:text-gray-500" aria-hidden="true" />
                         </PopoverButton>
 
@@ -77,7 +140,7 @@ const projetos = [
                                 <div class="p-4">
                                     <div
                                         v-for="item in projetos"
-                                        :key="item.name"
+                                        :key="item.to"
                                         class="group relative flex items-center gap-x-6 rounded-lg p-4 text-sm/6 hover:bg-gray-50 dark:hover:bg-white/5"
                                     >
                                         <div
@@ -107,6 +170,7 @@ const projetos = [
                     </Popover>
                 </PopoverGroup>
                 <div class="hidden lg:flex lg:flex-1 lg:justify-end">
+                    <LanguageSwitcher class="mr-4" />
                     <ThemeSwitcher class="mr-4" />
                 </div>
             </nav>
@@ -117,7 +181,7 @@ const projetos = [
                 >
                     <div class="flex items-center justify-between">
                         <RouterLink to="/" class="-m-1.5 p-1.5" @click="mobileMenuOpen = false">
-                            <span class="sr-only">Igor Merlim — Início</span>
+                            <span class="sr-only">{{ t.logo }}</span>
                             <img class="h-8 w-auto" :src="logo" alt="" />
                         </RouterLink>
                         <button
@@ -125,24 +189,37 @@ const projetos = [
                             class="-m-2.5 rounded-md p-2.5 text-gray-700 dark:text-gray-400"
                             @click="mobileMenuOpen = false"
                         >
-                            <span class="sr-only">Fechar menu</span>
+                            <span class="sr-only">{{ t.fecharMenu }}</span>
                             <XMarkIcon class="size-6" aria-hidden="true" />
                         </button>
                     </div>
                     <div class="mt-6 flow-root">
                         <div class="-my-6 divide-y divide-gray-500/10 dark:divide-white/10">
                             <div class="space-y-2 py-6">
+                                <button
+                                    v-for="secao in secoes"
+                                    :key="secao.id"
+                                    type="button"
+                                    :aria-current="secaoAtiva === secao.id ? 'location' : undefined"
+                                    :class="[
+                                        secaoAtiva === secao.id ? 'text-sky-600 dark:text-sky-400' : 'text-gray-900 dark:text-white',
+                                        '-mx-3 block w-[calc(100%+1.5rem)] rounded-lg px-3 py-2 text-left text-base/7 font-semibold hover:bg-gray-50 dark:hover:bg-white/5',
+                                    ]"
+                                    @click="irPara(secao.id)"
+                                >
+                                    {{ t[secao.id] }}
+                                </button>
                                 <Disclosure as="div" class="-mx-3" v-slot="{ open }">
                                     <DisclosureButton
                                         class="flex w-full items-center justify-between rounded-lg py-2 pr-3.5 pl-3 text-base/7 font-semibold text-gray-900 hover:bg-gray-50 dark:text-white dark:hover:bg-white/5"
                                     >
-                                        Projetos
+                                        {{ t.ferramentas }}
                                         <ChevronDownIcon :class="[open ? 'rotate-180' : '', 'size-5 flex-none']" aria-hidden="true" />
                                     </DisclosureButton>
                                     <DisclosurePanel class="mt-2 space-y-2">
                                         <RouterLink
                                             v-for="item in projetos"
-                                            :key="item.name"
+                                            :key="item.to"
                                             :to="item.to"
                                             @click="mobileMenuOpen = false"
                                             class="block rounded-lg py-2 pr-3 pl-6 text-sm/7 font-semibold text-gray-900 hover:bg-gray-50 dark:text-white dark:hover:bg-white/5"
@@ -154,7 +231,7 @@ const projetos = [
                             </div>
                             <div class="py-6 flex items-center gap-3">
                                 <ThemeSwitcher />
-                                <span class="text-sm text-gray-700 dark:text-gray-300">Alternar tema</span>
+                                <span class="text-sm text-gray-700 dark:text-gray-300">{{ t.alternarTema }}</span>
                             </div>
                         </div>
                     </div>

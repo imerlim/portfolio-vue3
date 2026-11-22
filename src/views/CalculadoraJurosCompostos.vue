@@ -6,25 +6,25 @@
             <div class="container mx-auto sm:px-16">
                 <div class="grid grid-cols-1 gap-x-8 gap-y-8 px-4 py-11 sm:grid-cols-2 sm:px-6 lg:grid-cols-4 lg:px-8">
                     <div class="col-span-1 sm:col-span-2 lg:col-span-4 text-center text-2xl">
-                        <h1 class="text-slate-900 dark:text-white">Calculadora de Juros Compostos</h1>
+                        <h1 class="text-slate-900 dark:text-white">{{ t.titulo }}</h1>
                     </div>
 
                     <div v-show="calculado" class="col-span-1 sm:col-span-2 lg:col-span-4 justify-items-center">
                         <dl class="grid grid-cols-1 gap-3 overflow-hidden rounded-2xl text-center sm:grid-cols-2 lg:grid-cols-3">
                             <div class="flex flex-col bg-slate-400/5 p-8 dark:bg-white/5">
-                                <dt class="text-2xl font-semibold text-slate-900 dark:text-white">Valor investido</dt>
+                                <dt class="text-2xl font-semibold text-slate-900 dark:text-white">{{ t.valorInvestido }}</dt>
                                 <dd class="order-first text-3xl font-semibold tracking-tight text-slate-900 dark:text-white">
                                     {{ valorTotalInvestido }}
                                 </dd>
                             </div>
                             <div ref="montanteDiv" class="flex flex-col bg-slate-400/5 p-8 dark:bg-white/5">
-                                <dt class="text-2xl font-semibold text-sky-500">Montante final</dt>
+                                <dt class="text-2xl font-semibold text-sky-500">{{ t.montanteFinal }}</dt>
                                 <dd class="order-first text-3xl font-semibold tracking-tight text-sky-500">
                                     {{ montanteFinal }}
                                 </dd>
                             </div>
                             <div class="flex flex-col bg-slate-400/5 p-8 dark:bg-white/5">
-                                <dt class="text-2xl font-semibold text-slate-900 dark:text-white">Total em juros</dt>
+                                <dt class="text-2xl font-semibold text-slate-900 dark:text-white">{{ t.totalJuros }}</dt>
                                 <dd class="order-first text-3xl font-semibold tracking-tight text-slate-900 dark:text-white">
                                     {{ totalEmJuros }}
                                 </dd>
@@ -38,7 +38,7 @@
                             placeholder="0,00"
                             :formata="true"
                             v-model="valorInicial"
-                            label="Valor inicial"
+                            :label="t.valorInicial"
                             id="valorInicial"
                             name="valorInicial"
                         >
@@ -51,7 +51,7 @@
                             placeholder="0,00"
                             :formata="true"
                             v-model="valorMensal"
-                            label="Aporte mensal"
+                            :label="t.aporteMensal"
                             id="valorMensal"
                             name="valorMensal"
                         >
@@ -65,15 +65,15 @@
                             :formata="true"
                             :propLargeAppend="true"
                             v-model="taxaJuros"
-                            label="Taxa de juros (%)"
+                            :label="t.taxaJuros"
                             id="taxaJuros"
                             name="taxaJuros"
                         >
                             <template #append>
                                 <CustomSelect
                                     :options="[
-                                        { label: 'Mensal', value: 'Mensal' },
-                                        { label: 'Anual', value: 'Anual' },
+                                        { label: t.mensal, value: 'Mensal' },
+                                        { label: t.anual, value: 'Anual' },
                                     ]"
                                     v-model="taxaJurosSelect"
                                     id="taxaJurosSelect"
@@ -90,15 +90,15 @@
                             placeholder="0"
                             :propLargeAppend="true"
                             v-model="periodo"
-                            label="Período"
+                            :label="t.periodo"
                             id="periodo"
                             name="periodo"
                         >
                             <template #append>
                                 <CustomSelect
                                     :options="[
-                                        { label: 'Anos', value: 'Anos' },
-                                        { label: 'Meses', value: 'Meses' },
+                                        { label: t.anos, value: 'Anos' },
+                                        { label: t.meses, value: 'Meses' },
                                     ]"
                                     v-model="periodoSelect"
                                     id="periodoSelect"
@@ -113,7 +113,7 @@
                             class="cursor-pointer rounded-md ml-1 px-3 py-2 text-base font-semibold bg-sky-800 text-white shadow-xs hover:bg-sky-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-700 inline-flex"
                             @click="calculaJurosCompostos()"
                         >
-                            Calcular
+                            {{ t.calcular }}
                         </button>
                     </div>
                 </div>
@@ -126,11 +126,20 @@
 import CustomInput from '@/components/CustomInput.vue';
 import CustomSelect from '@/components/CustomSelect.vue';
 import { formatarBRL } from '@/utils/formatters';
+import { ui } from '@/data/ui';
+import { porIdioma } from '@/composables/useIdioma';
 
 // Cálculo 100% no navegador — sem backend.
 export default {
     name: 'CalculadoraJurosCompostos',
     components: { CustomInput, CustomSelect },
+
+    computed: {
+        // Textos no idioma ativo (reativo ao estado global de useIdioma)
+        t() {
+            return porIdioma(ui).juros;
+        },
+    },
 
     data() {
         return {
@@ -155,13 +164,13 @@ export default {
             const periodo = parseFloat(this.periodo);
 
             if (!C && !A) {
-                return this.$msg.warning('Informe pelo menos um valor: inicial ou mensal.');
+                return this.$msg.warning(this.t.avisos.informeValor);
             }
             if (!taxa) {
-                return this.$msg.warning('Informe uma taxa de juros.');
+                return this.$msg.warning(this.t.avisos.informeTaxa);
             }
             if (!(periodo > 0)) {
-                return this.$msg.warning('Informe um período maior que 0.');
+                return this.$msg.warning(this.t.avisos.informePeriodo);
             }
 
             // Taxa mensal equivalente
