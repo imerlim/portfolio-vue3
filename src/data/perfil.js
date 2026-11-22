@@ -97,35 +97,18 @@ export const atuacao = {
     ],
 };
 
-// Repositórios públicos de github.com/imerlim + projetos selecionados dos CVs
+// Prints dos projetos ficam em public/storage/projetos/
+const imgProjeto = file => `${import.meta.env.BASE_URL}storage/projetos/${file}`;
+
+// Só portfolio-vue3 e desafio-btg-v2 exibem link de repositório; os demais (inclusive o Maktub,
+// que será comercializado) mostram apenas descrição e print.
 export const projetos = [
     {
-        nome: 'Financial Tools Dashboard',
-        descricao: 'Aplicação web autenticada com ferramentas financeiras: cálculo de margem, simulação de juros compostos e visualização de fluxo de caixa pessoal.',
-        tags: ['Vue'],
-        repo: 'https://github.com/imerlim/financial-tools-dashboard',
-        demo: 'https://merlim.shop/',
-    },
-    {
-        nome: 'Sistema de Gerenciamento de Documentos (DMS)',
-        descricao: 'Gestão segura de arquivos no AWS S3, com controle de acesso, metadados e URLs temporárias para compartilhamento.',
-        tags: ['Laravel', 'AWS S3'],
-    },
-    {
-        nome: 'Dashboard de Inteligência Financeira',
-        descricao: 'Acompanhamento de receitas e despesas com categorização automática e gráficos interativos mensais.',
-        tags: ['Laravel', 'Vue.js', 'Highcharts'],
-    },
-    {
-        nome: 'API de Controle Financeiro',
-        descricao: 'API e interface para finanças pessoais, com saldo mensal, categorização de receitas/despesas e cálculos em tempo real.',
-        tags: ['NestJS', 'React'],
-    },
-    {
-        nome: 'Vue MFE',
-        descricao: 'Arquitetura de Micro Front-end com Vue 3, TypeScript e Vite, com gerenciamento de estado em Pinia e design modular por domínio.',
-        tags: ['Vue 3', 'TypeScript', 'Pinia', 'Vite'],
-        repo: 'https://github.com/imerlim/vue-mfe',
+        nome: 'Portfólio (este site)',
+        descricao: 'Vue 3 + Vite + Tailwind CSS 4, com modo claro/escuro, animações em GSAP e anime.js, carrossel 3D em cubo com Swiper e espiral em Three.js.',
+        tags: ['Vue 3', 'Vite', 'Tailwind CSS', 'Three.js'],
+        repo: 'https://github.com/imerlim/portfolio-vue3',
+        imagem: imgProjeto('portfolio.jpeg'),
     },
     {
         nome: 'Jogo da Memória — Desafio BTG v2',
@@ -133,25 +116,37 @@ export const projetos = [
         tags: ['Vue 3', 'TypeScript'],
         repo: 'https://github.com/imerlim/desafio-btg-v2',
         demo: 'https://desafio-btg-v2.vercel.app',
+        imagem: imgProjeto('jogo-memoria.jpeg'),
     },
     {
-        nome: 'Jogo da Memória — Desafio BTG v1',
-        descricao: 'Versão funcional e simplificada com Vue 3 e Vite, com foco em lógica de jogo e agilidade na entrega.',
-        tags: ['Vue 3', 'Vite'],
-        repo: 'https://github.com/imerlim/desafio-btg-v1',
-        demo: 'https://desafio-btg-v1.vercel.app',
+        nome: 'Maktub — Gestão de Bar & Eventos',
+        descricao: 'Painel para bar e eventos com Laravel 12, Inertia.js e Vue 3: eventos, custos e despesas fixas consolidados em um dashboard. Projeto em desenvolvimento, com módulos de insumos, drinks e financeiro a caminho.',
+        tags: ['Laravel 12', 'Inertia.js', 'Vue 3', 'Tailwind CSS'],
+        imagem: imgProjeto('maktub.jpeg'),
     },
     {
-        nome: 'Simulador de Faturamento de Eventos',
-        descricao: 'Projeto com bootstrap-vue para simular faturamento e gastos de um evento.',
-        tags: ['bootstrap-vue'],
-        repo: 'https://github.com/imerlim/simulador-faturamento-eventos',
+        nome: 'Financial Tools Dashboard',
+        descricao: 'Aplicação web autenticada com ferramentas financeiras: cálculo de margem, simulação de juros compostos e visualização de fluxo de caixa pessoal.',
+        tags: ['Vue'],
+        imagem: imgProjeto('financial-tools.jpeg'),
     },
     {
-        nome: 'Portfólio (este site)',
-        descricao: 'Vue 3 + Vite + Tailwind CSS 4, com modo claro/escuro, animações em GSAP e anime.js, carrossel 3D em cubo com Swiper e espiral em Three.js.',
-        tags: ['Vue 3', 'Vite', 'Tailwind CSS', 'Three.js'],
-        repo: 'https://github.com/imerlim/portfolio-vue3',
+        nome: 'Sistema de Gerenciamento de Documentos (DMS)',
+        descricao: 'Gestão segura de arquivos no AWS S3, com controle de acesso, metadados e URLs temporárias para compartilhamento.',
+        tags: ['Laravel', 'AWS S3'],
+        imagem: imgProjeto('dms.jpeg'),
+    },
+    {
+        nome: 'Dashboard de Inteligência Financeira',
+        descricao: 'Acompanhamento de receitas e despesas com categorização automática e gráficos interativos mensais.',
+        tags: ['Laravel', 'Vue.js', 'Highcharts'],
+        imagem: imgProjeto('dashboard-financeiro.jpeg'),
+    },
+    {
+        nome: 'API de Controle Financeiro',
+        descricao: 'API e interface para finanças pessoais, com saldo mensal, categorização de receitas/despesas e cálculos em tempo real.',
+        tags: ['NestJS', 'React'],
+        imagem: imgProjeto('api-financeira.jpeg'),
     },
 ];
 

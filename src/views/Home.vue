@@ -309,15 +309,26 @@ onBeforeUnmount(() => {
                 </h2>
                 <p v-reveal class="mt-4 text-center text-gray-600 dark:text-gray-400">{{ t.projetosSub }}</p>
 
-                <div class="mt-12 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
+                <!-- 2 colunas a partir de md; se o total for ímpar, o último card fica centralizado com a largura de uma coluna -->
+                <div class="mx-auto mt-12 grid max-w-6xl grid-cols-1 gap-8 md:grid-cols-2">
                     <article
                         v-for="(p, i) in projetos"
                         :key="i"
-                        v-reveal="{ delay: (i % 3) * 0.08 }"
-                        class="flex flex-col overflow-hidden rounded-xl bg-slate-100 shadow-sm ring-1 ring-slate-900/5 dark:bg-slate-900 dark:ring-white/10"
+                        v-reveal="{ delay: (i % 2) * 0.08 }"
+                        class="flex flex-col overflow-hidden rounded-xl bg-slate-100 shadow-sm ring-1 ring-slate-900/5 md:last:odd:col-span-2 md:last:odd:w-[calc(50%-1rem)] md:last:odd:justify-self-center dark:bg-slate-900 dark:ring-white/10"
                     >
+                        <!-- object-contain + padding: print inteiro visível, sem cortar gráficos/dashboards -->
+                        <img
+                            v-if="p.imagem"
+                            :src="p.imagem"
+                            :alt="t.projetoImgAria(p.nome)"
+                            loading="lazy"
+                            decoding="async"
+                            class="aspect-video w-full border-b border-slate-200 bg-slate-200/60 object-contain object-center p-2 dark:border-slate-800 dark:bg-slate-800/60"
+                        />
                         <!-- Espaço reservado para imagem do projeto -->
                         <div
+                            v-else
                             role="img"
                             :aria-label="t.projetoImgAria(p.nome)"
                             class="flex aspect-video items-center justify-center border-b-2 border-dashed border-slate-300 bg-slate-200/60 text-slate-400 dark:border-slate-700 dark:bg-slate-800/60 dark:text-slate-500"

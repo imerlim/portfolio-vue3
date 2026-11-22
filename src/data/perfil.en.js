@@ -88,34 +88,15 @@ export const atuacao = {
     ],
 };
 
+const imgProjeto = file => `${import.meta.env.BASE_URL}storage/projetos/${file}`;
+
 export const projetos = [
     {
-        nome: 'Financial Tools Dashboard',
-        descricao: 'Authenticated web app with financial tools: margin calculation, compound interest simulation and personal cash flow visualization.',
-        tags: ['Vue'],
-        repo: 'https://github.com/imerlim/financial-tools-dashboard',
-        demo: 'https://merlim.shop/',
-    },
-    {
-        nome: 'Document Management System (DMS)',
-        descricao: 'Secure file management on AWS S3, with access control, metadata and temporary URLs for sharing.',
-        tags: ['Laravel', 'AWS S3'],
-    },
-    {
-        nome: 'Financial Intelligence Dashboard',
-        descricao: 'Income and expense tracking with automatic categorization and interactive monthly charts.',
-        tags: ['Laravel', 'Vue.js', 'Highcharts'],
-    },
-    {
-        nome: 'Financial Control API',
-        descricao: 'API and interface for personal finances, with monthly balance, income/expense categorization and real-time calculations.',
-        tags: ['NestJS', 'React'],
-    },
-    {
-        nome: 'Vue MFE',
-        descricao: 'Micro Front-end architecture with Vue 3, TypeScript and Vite, with Pinia state management and domain-based modular design.',
-        tags: ['Vue 3', 'TypeScript', 'Pinia', 'Vite'],
-        repo: 'https://github.com/imerlim/vue-mfe',
+        nome: 'Portfolio (this site)',
+        descricao: 'Vue 3 + Vite + Tailwind CSS 4, with light/dark mode, GSAP and anime.js animations, a 3D cube carousel with Swiper and a Three.js spiral.',
+        tags: ['Vue 3', 'Vite', 'Tailwind CSS', 'Three.js'],
+        repo: 'https://github.com/imerlim/portfolio-vue3',
+        imagem: imgProjeto('portfolio.jpeg'),
     },
     {
         nome: 'Memory Game — BTG Challenge v2',
@@ -123,25 +104,37 @@ export const projetos = [
         tags: ['Vue 3', 'TypeScript'],
         repo: 'https://github.com/imerlim/desafio-btg-v2',
         demo: 'https://desafio-btg-v2.vercel.app',
+        imagem: imgProjeto('jogo-memoria.jpeg'),
     },
     {
-        nome: 'Memory Game — BTG Challenge v1',
-        descricao: 'Functional, simplified version with Vue 3 and Vite, focused on game logic and fast delivery.',
-        tags: ['Vue 3', 'Vite'],
-        repo: 'https://github.com/imerlim/desafio-btg-v1',
-        demo: 'https://desafio-btg-v1.vercel.app',
+        nome: 'Maktub — Bar & Events Management',
+        descricao: 'Dashboard for a bar and events business built with Laravel 12, Inertia.js and Vue 3: events, costs and fixed expenses consolidated in one view. Project under development, with supplies, drinks and finance modules on the way.',
+        tags: ['Laravel 12', 'Inertia.js', 'Vue 3', 'Tailwind CSS'],
+        imagem: imgProjeto('maktub.jpeg'),
     },
     {
-        nome: 'Event Revenue Simulator',
-        descricao: 'Project with bootstrap-vue to simulate the revenue and expenses of an event.',
-        tags: ['bootstrap-vue'],
-        repo: 'https://github.com/imerlim/simulador-faturamento-eventos',
+        nome: 'Financial Tools Dashboard',
+        descricao: 'Authenticated web app with financial tools: margin calculation, compound interest simulation and personal cash flow visualization.',
+        tags: ['Vue'],
+        imagem: imgProjeto('financial-tools.jpeg'),
     },
     {
-        nome: 'Portfolio (this site)',
-        descricao: 'Vue 3 + Vite + Tailwind CSS 4, with light/dark mode, GSAP and anime.js animations, a 3D cube carousel with Swiper and a Three.js spiral.',
-        tags: ['Vue 3', 'Vite', 'Tailwind CSS', 'Three.js'],
-        repo: 'https://github.com/imerlim/portfolio-vue3',
+        nome: 'Document Management System (DMS)',
+        descricao: 'Secure file management on AWS S3, with access control, metadata and temporary URLs for sharing.',
+        tags: ['Laravel', 'AWS S3'],
+        imagem: imgProjeto('dms.jpeg'),
+    },
+    {
+        nome: 'Financial Intelligence Dashboard',
+        descricao: 'Income and expense tracking with automatic categorization and interactive monthly charts.',
+        tags: ['Laravel', 'Vue.js', 'Highcharts'],
+        imagem: imgProjeto('dashboard-financeiro.jpeg'),
+    },
+    {
+        nome: 'Financial Control API',
+        descricao: 'API and interface for personal finances, with monthly balance, income/expense categorization and real-time calculations.',
+        tags: ['NestJS', 'React'],
+        imagem: imgProjeto('api-financeira.jpeg'),
     },
 ];
 
