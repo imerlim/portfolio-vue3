@@ -7,7 +7,7 @@ export const sobre = {
     titulo: 'Full-Stack Developer',
     destaque: 'PHP (Laravel) • Node.js (NestJS) • SQL (MySQL/Postgres) • Vue.js • React • Inertia • Tailwind',
     local: 'Rio de Janeiro, RJ — Brazil',
-    foto: `${import.meta.env.BASE_URL}storage/perfil/foto-perfil.png`,
+    foto: `${import.meta.env.BASE_URL}storage/perfil/foto-perfil.jpg`,
     paragrafos: [
         'Full-Stack Developer with 5+ years of hands-on experience building scalable systems with Laravel, Vue.js and modern web technologies. Specialized in ERP integrations, marketplace automation and high-performance APIs.',
         'I help companies scale ERP and e-commerce operations: robust back-end architectures, marketplace integrations and workflow automation that eliminates manual processes. From the data synchronization engine to the SPA with Vue and React, my focus is clean architecture, performance and continuous learning.',
