@@ -1,4 +1,7 @@
+import { watch } from 'vue'
 import { createRouter, createWebHashHistory } from 'vue-router'
+import { idioma } from '@/composables/useIdioma'
+import { aplicarSeo } from '@/composables/useSeo'
 
 // Hash history: funciona no GitHub Pages sem configuração extra de 404/rewrites.
 const routes = [
@@ -30,7 +33,11 @@ const router = createRouter({
 })
 
 router.afterEach(to => {
-    document.title = to.meta.title ? `${to.meta.title}` : 'Igor Merlim'
+    aplicarSeo(to.name)
+})
+
+watch(idioma, () => {
+    aplicarSeo(router.currentRoute.value.name)
 })
 
 export default router

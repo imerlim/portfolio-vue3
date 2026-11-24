@@ -130,7 +130,15 @@ export const projetos = [
         nome: 'Financial Tools Dashboard',
         descricao: 'Aplicação web autenticada com ferramentas financeiras: cálculo de margem, simulação de juros compostos e visualização de fluxo de caixa pessoal.',
         tags: ['Vue'],
-        imagem: imgProjeto('financial-tools.jpeg'),
+        to: '/calculadora-juros-compostos',
+        imagem: imgProjeto('financial-tools.png'),
+    },
+    {
+        nome: 'Calculadora de Margem de Lucro',
+        descricao: 'Ferramenta interativa para cálculo de preço de venda a partir do custo, com margem sobre venda (MLV), markup sobre custo (MLC), descontos/taxas de marketplace, lucro líquido e composição percentual.',
+        tags: ['Vue 3', 'Tailwind CSS'],
+        to: '/calculadora-margem',
+        imagem: imgProjeto('calculadora-margem.png'),
     },
     {
         nome: 'Sistema de Gerenciamento de Documentos (DMS)',

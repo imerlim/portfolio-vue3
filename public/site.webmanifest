@@ -1,0 +1,16 @@
+{
+  "name": "Igor Merlim — Portfólio",
+  "short_name": "Igor Merlim",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#070d19",
+  "theme_color": "#070d19",
+  "icons": [
+    {
+      "src": "favicon.png",
+      "sizes": "any",
+      "type": "image/png"
+    }
+  ]
+}

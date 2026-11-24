@@ -4,7 +4,68 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
+    --font-display: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
+    --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+    --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
+
+    --color-brand-50: #f0f9ff;
+    --color-brand-100: #e0f2fe;
+    --color-brand-200: #bae6fd;
+    --color-brand-300: #7dd3fc;
+    --color-brand-400: #38bdf8;
+    --color-brand-500: #0ea5e9;
+    --color-brand-600: #0284c7;
+    --color-brand-700: #0369a1;
+    --color-brand-800: #075985;
+    --color-brand-900: #0c4a6e;
+
     --color-slate-850: #1c2535;
+}
+
+:root {
+    --bg-canvas: #f8fafc;
+    --bg-surface: #ffffff;
+    --bg-subtle: #f1f5f9;
+    --border-subtle: #e2e8f0;
+    --border-strong: #cbd5e1;
+    --text-primary: #0f172a;
+    --text-secondary: #475569;
+    --text-muted: #64748b;
+    --accent: #0284c7;
+    --accent-strong: #0369a1;
+}
+
+.dark {
+    --bg-canvas: #070d19;
+    --bg-surface: #0e172a;
+    --bg-subtle: #162238;
+    --border-subtle: #1e293b;
+    --border-strong: #334155;
+    --text-primary: #f8fafc;
+    --text-secondary: #cbd5e1;
+    --text-muted: #94a3b8;
+    --accent: #38bdf8;
+    --accent-strong: #0ea5e9;
+}
+
+@layer base {
+    html {
+        scrollbar-gutter: stable;
+    }
+
+    body {
+        font-family: var(--font-sans);
+        background-color: var(--bg-canvas);
+        color: var(--text-primary);
+        -webkit-font-smoothing: antialiased;
+    }
+}
+
+/* Rolagem suave para âncoras/scrollIntoView (desligada para quem prefere menos movimento) */
+@media (prefers-reduced-motion: no-preference) {
+    html {
+        scroll-behavior: smooth;
+    }
 }
 
 /* Esconde as setas de input numérico */
@@ -17,25 +78,9 @@ input[type='number'] {
     -moz-appearance: textfield;
 }
 
-html {
-    scrollbar-gutter: stable;
-}
-
-/* Rolagem suave para âncoras/scrollIntoView (desligada para quem prefere menos movimento) */
-@media (prefers-reduced-motion: no-preference) {
-    html {
-        scroll-behavior: smooth;
-    }
-}
-
-/* Seções da Home: desconta a altura da NavBar fixa ao rolar até elas */
+/* Seções da Home: desconta a altura da NavBar fixa (h-16) ao rolar até elas */
 .scroll-section {
-    scroll-margin-top: 4rem;
-}
-@media (min-width: 40rem) {
-    .scroll-section {
-        scroll-margin-top: 5.5rem;
-    }
+    scroll-margin-top: 4.5rem;
 }
 
 button:not(:disabled),

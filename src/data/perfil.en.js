@@ -117,7 +117,15 @@ export const projetos = [
         nome: 'Financial Tools Dashboard',
         descricao: 'Authenticated web app with financial tools: margin calculation, compound interest simulation and personal cash flow visualization.',
         tags: ['Vue'],
-        imagem: imgProjeto('financial-tools.jpeg'),
+        to: '/calculadora-juros-compostos',
+        imagem: imgProjeto('financial-tools.png'),
+    },
+    {
+        nome: 'Profit Margin Calculator',
+        descricao: 'Interactive tool to calculate selling price from cost, supporting margin on sales (MLV), markup on cost (MLC), marketplace fees/discounts, net profit and percentage breakdown.',
+        tags: ['Vue 3', 'Tailwind CSS'],
+        to: '/calculadora-margem',
+        imagem: imgProjeto('calculadora-margem.png'),
     },
     {
         nome: 'Document Management System (DMS)',

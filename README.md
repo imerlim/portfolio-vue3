@@ -21,9 +21,9 @@ Qualquer outra rota redireciona para `#/`.
   - Textos fixos da interface: `src/data/ui.js`
   - Perfil, experiência e projetos: `src/data/perfil.js` (PT) e `src/data/perfil.en.js` (EN)
   - Slides do carrossel: `src/data/slides.js` (PT) e `src/data/slides.en.js` (EN)
-- **Carrossel em cubo 3D**: seção Experiência usa Swiper com `EffectCube`, loop, autoplay de 15 s, setas e paginação. O título, as tags e a descrição ao lado acompanham o slide ativo.
-- **Projetos**: grade de cards (2 colunas a partir de `md`; se o total for ímpar, o último fica centralizado). A miniatura preenche o card (`object-cover`); o print inteiro aparece no modal. Projeto sem `imagem` mostra um espaço reservado com ícone.
-- **Modal de zoom (lightbox)**: clicar num slide do carrossel ou na imagem de um projeto abre a imagem em tela cheia (`Home.vue`). Enquanto o modal está aberto, o autoplay do carrossel pausa e a página não rola.
+- **Carrossel em cubo 3D**: seção Experiência usa Swiper com `EffectCube`, loop, autoplay de 12 s, setas, paginação e seletor rápido de integrações. Cada face exibe um card técnico vetorial (Architecture Blueprint, sem prints internos por conformidade LGPD), enquanto o painel ao lado acompanha o slide ativo.
+- **Projetos**: grade de cards com filtro por stack (2 colunas a partir de `md`; se o total for ímpar, o último fica centralizado). A miniatura preenche o card (`object-cover`); o print inteiro aparece no modal. Projeto sem `imagem` mostra um espaço reservado com ícone.
+- **Modal de zoom (lightbox)**: clicar na imagem de um projeto abre a imagem em tela cheia (`ImageLightbox.vue`). Enquanto o modal está aberto, a página não rola.
   - Zoom de 1x a 4x: botões +/−/restaurar, roda do mouse, duplo clique (2x ↔ 1x) ou teclas `+`, `-` e `0`
   - Com zoom, arraste para mover a imagem
   - Fecha com `Esc`, com o botão de fechar ou clicando fora da imagem; o foco volta ao elemento que abriu o modal
@@ -52,21 +52,14 @@ Tudo que está em `public/` é servido como está, na raiz do site. As imagens j
 
 ```
 public/storage/
-├── calculadora-juros-compostos.jpeg   ┐
-├── checkout-rede-itau-api.jpeg        │
-├── integracao-ifood.jpeg              │
-├── integracao-shopee.jpeg             │  slides do carrossel
-├── integracao-shopify.jpeg            │  (src/data/slides*.js)
-├── integracao-vendizap.jpeg           │
-├── mercado-livre-integracao.jpeg      │
-├── nuvemshop-integracao.jpeg          ┘
 ├── perfil/
 │   └── foto-perfil.jpg                   foto da seção Sobre (src/data/perfil*.js)
 └── projetos/                             cards da seção Projetos
     ├── api-financeira.jpeg               (src/data/perfil*.js)
+    ├── calculadora-margem.png
     ├── dashboard-financeiro.jpeg
     ├── dms.jpeg
-    ├── financial-tools.jpeg
+    ├── financial-tools.png
     ├── jogo-memoria.jpeg
     ├── maktub.jpeg
     └── portfolio.jpeg

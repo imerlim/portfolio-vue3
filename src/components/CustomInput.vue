@@ -48,23 +48,23 @@ defineExpose({ focus: () => fieldRef.value?.focus() });
 
 <template>
     <div class="w-full">
-        <label v-if="label" :for="id" class="block mb-1 font-medium text-slate-900 dark:text-white" :class="textSize">
+        <label v-if="label" :for="id" class="mb-1.5 block font-medium text-[var(--text-primary)]" :class="textSize">
             {{ label }}
         </label>
 
         <div
-            class="flex items-center w-full overflow-hidden rounded-lg bg-slate-50 dark:bg-slate-700 focus-within:ring-1"
+            class="flex w-full items-center overflow-hidden rounded-lg border bg-[var(--bg-surface)] transition-colors"
             :class="[
-                propLargeAppend ? 'px-0' : 'px-2',
+                propLargeAppend ? 'px-0' : 'px-2.5',
                 error
-                    ? 'border border-red-500 focus-within:ring-red-500'
-                    : 'border border-slate-300 dark:border-slate-600 focus-within:ring-blue-500 focus-within:border-blue-500',
+                    ? 'border-red-500 focus-within:border-red-500 focus-within:ring-2 focus-within:ring-red-500/20'
+                    : 'border-[var(--border-strong)] focus-within:border-[var(--accent)] focus-within:ring-2 focus-within:ring-[var(--accent)]/20',
             ]"
         >
             <div
                 v-if="$slots.prepend || prepend"
-                class="flex items-center gap-1 select-none text-slate-700 dark:text-slate-300"
-                :class="[textSize, propLargeAppend ? 'pl-2' : '']"
+                class="flex select-none items-center gap-1 text-[var(--text-muted)]"
+                :class="[textSize, propLargeAppend ? 'pl-2.5' : '']"
             >
                 <slot name="prepend">{{ prepend }}</slot>
             </div>
@@ -84,20 +84,24 @@ defineExpose({ focus: () => fieldRef.value?.focus() });
                 :value="formata ? formatarMoeda(modelValue) : modelValue"
                 @input="updateValue"
                 @focus="$event.target.select()"
-                class="w-full min-w-0 p-2 text-slate-900 bg-slate-50 dark:bg-slate-700 dark:text-white placeholder-slate-400 focus:outline-none border-none"
-                :class="[textSize, { 'opacity-50 cursor-not-allowed': disabled }]"
+                class="w-full min-w-0 border-none bg-transparent p-2 text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none"
+                :class="[
+                    textSize,
+                    { 'font-mono tabular-nums': formata || type === 'number' },
+                    { 'cursor-not-allowed opacity-50': disabled },
+                ]"
             />
 
             <div
                 v-if="$slots.append || append"
-                class="flex items-center justify-end gap-1 text-slate-700 dark:text-slate-300"
-                :class="[textSize, propLargeAppend ? 'w-28 shrink-0' : 'w-4']"
+                class="flex items-center justify-end gap-1 text-[var(--text-muted)]"
+                :class="[textSize, propLargeAppend ? 'w-28 shrink-0' : 'w-5']"
             >
                 <slot name="append">{{ append }}</slot>
             </div>
         </div>
 
-        <p v-if="error && errorMessage" class="mt-1 text-red-600" :class="textSize">
+        <p v-if="error && errorMessage" class="mt-1 text-red-600 dark:text-red-400" :class="textSize">
             {{ errorMessage }}
         </p>
     </div>

@@ -25,7 +25,7 @@ export default {
             clearProps: 'transform,opacity',
             scrollTrigger: {
                 trigger: el,
-                start: value.start ?? 'top 85%',
+                start: value.start ?? 'top 95%',
                 once: true,
             },
         });

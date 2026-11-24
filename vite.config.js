@@ -10,4 +10,19 @@ export default defineConfig({
   resolve: {
     alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) },
   },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (!id.includes('node_modules')) return
+          if (id.includes('three')) return 'vendor-three'
+          if (id.includes('swiper')) return 'vendor-swiper'
+          if (id.includes('gsap') || id.includes('animejs')) return 'vendor-motion'
+          if (id.includes('vue') || id.includes('vue-router') || id.includes('@headlessui')) {
+            return 'vendor-vue'
+          }
+        },
+      },
+    },
+  },
 })
