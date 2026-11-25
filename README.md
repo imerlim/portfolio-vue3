@@ -27,7 +27,7 @@ Qualquer outra rota redireciona para `#/`.
   - Zoom de 1x a 4x: botões +/−/restaurar, roda do mouse, duplo clique (2x ↔ 1x) ou teclas `+`, `-` e `0`
   - Com zoom, arraste para mover a imagem
   - Fecha com `Esc`, com o botão de fechar ou clicando fora da imagem; o foco volta ao elemento que abriu o modal
-- **Foto de perfil**: seção Sobre, em `public/storage/perfil/foto-perfil.jpg` (campo `foto` em `perfil.js`/`perfil.en.js`). Sem foto, aparece um espaço reservado.
+- **Foto de perfil**: seção Sobre, em `public/storage/perfil/foto-perfil.jpeg` (campo `foto` em `perfil.js`/`perfil.en.js`). Sem foto, aparece um espaço reservado.
 
 ## Rodar localmente
 
@@ -53,13 +53,12 @@ Tudo que está em `public/` é servido como está, na raiz do site. As imagens j
 ```
 public/storage/
 ├── perfil/
-│   └── foto-perfil.jpg                   foto da seção Sobre (src/data/perfil*.js)
+│   └── foto-perfil.jpeg                   foto da seção Sobre (src/data/perfil*.js)
 └── projetos/                             cards da seção Projetos
     ├── api-financeira.jpeg               (src/data/perfil*.js)
+    ├── calculadora-juros-compostos.png
     ├── calculadora-margem.png
-    ├── dashboard-financeiro.jpeg
-    ├── dms.jpeg
-    ├── financial-tools.png
+    ├── dms.png
     ├── jogo-memoria.jpeg
     ├── maktub.jpeg
     └── portfolio.jpeg

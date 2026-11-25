@@ -7,7 +7,7 @@ export const sobre = {
     titulo: 'Full-Stack Developer',
     destaque: 'PHP (Laravel) • Node.js (NestJS) • SQL (MySQL/Postgres) • Vue.js • React • Inertia • Tailwind',
     local: 'Rio de Janeiro, RJ — Brazil',
-    foto: `${import.meta.env.BASE_URL}storage/perfil/foto-perfil.jpg`,
+    foto: `${import.meta.env.BASE_URL}storage/perfil/foto-perfil.jpeg`,
     paragrafos: [
         'Full-Stack Developer with 6+ years of hands-on experience building scalable systems with Laravel, Vue.js and modern web technologies. Specialized in ERP integrations, marketplace automation and high-performance APIs.',
         'I help companies scale ERP and e-commerce operations: robust back-end architectures, marketplace integrations and workflow automation that eliminates manual processes. From the data synchronization engine to the SPA with Vue and React, my focus is clean architecture, performance and continuous learning.',
@@ -108,17 +108,11 @@ export const projetos = [
         imagem: imgProjeto('jogo-memoria.jpeg'),
     },
     {
-        nome: 'Maktub — Bar & Events Management',
-        descricao: 'Dashboard for a bar and events business built with Laravel 12, Inertia.js and Vue 3: events, costs and fixed expenses consolidated in one view. Project under development, with supplies, drinks and finance modules on the way.',
-        tags: ['Laravel 12', 'Inertia.js', 'Vue 3', 'Tailwind CSS'],
-        imagem: imgProjeto('maktub.jpeg'),
-    },
-    {
-        nome: 'Financial Tools Dashboard',
-        descricao: 'Authenticated web app with financial tools: margin calculation, compound interest simulation and personal cash flow visualization.',
-        tags: ['Vue'],
+        nome: 'Compound Interest Calculator',
+        descricao: 'Interactive tool to simulate wealth growth with initial capital, monthly contributions, monthly or yearly interest rate, term in months or years, total invested, accrued interest and percentage breakdown.',
+        tags: ['Vue 3', 'Tailwind CSS'],
         to: '/calculadora-juros-compostos',
-        imagem: imgProjeto('financial-tools.png'),
+        imagem: imgProjeto('calculadora-juros-compostos.png'),
     },
     {
         nome: 'Profit Margin Calculator',
@@ -128,22 +122,22 @@ export const projetos = [
         imagem: imgProjeto('calculadora-margem.png'),
     },
     {
-        nome: 'Document Management System (DMS)',
-        descricao: 'Secure file management on AWS S3, with access control, metadata and temporary URLs for sharing.',
-        tags: ['Laravel', 'AWS S3'],
-        imagem: imgProjeto('dms.jpeg'),
-    },
-    {
-        nome: 'Financial Intelligence Dashboard',
-        descricao: 'Income and expense tracking with automatic categorization and interactive monthly charts.',
-        tags: ['Laravel', 'Vue.js', 'Highcharts'],
-        imagem: imgProjeto('dashboard-financeiro.jpeg'),
-    },
-    {
         nome: 'Financial Control API',
         descricao: 'API and interface for personal finances, with monthly balance, income/expense categorization and real-time calculations.',
         tags: ['NestJS', 'React'],
         imagem: imgProjeto('api-financeira.jpeg'),
+    },
+    {
+        nome: 'Maktub — Bar & Events Management',
+        descricao: 'Dashboard for a bar and events business built with Laravel 12, Inertia.js and Vue 3: events, costs and fixed expenses consolidated in one view. Project under development, with supplies, drinks and finance modules on the way.',
+        tags: ['Laravel 12', 'Inertia.js', 'Vue 3', 'Tailwind CSS'],
+        imagem: imgProjeto('maktub.jpeg'),
+    },
+    {
+        nome: 'Document Management System (DMS)',
+        descricao: 'Secure file management on AWS S3, with access control, metadata and temporary URLs for sharing.',
+        tags: ['Laravel', 'AWS S3'],
+        imagem: imgProjeto('dms.png'),
     },
 ];
 

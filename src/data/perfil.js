@@ -12,7 +12,7 @@ export const sobre = {
     destaque: 'PHP (Laravel) • Node.js (NestJS) • SQL (MySQL/Postgres) • Vue.js • React • Inertia • Tailwind',
     local: 'Rio de Janeiro, RJ — Brasil',
     // Foto em public/storage/perfil/
-    foto: `${import.meta.env.BASE_URL}storage/perfil/foto-perfil.jpg`,
+    foto: `${import.meta.env.BASE_URL}storage/perfil/foto-perfil.jpeg`,
     // Resumo do CV_pt + resumo do LinkedIn
     paragrafos: [
         'Desenvolvedor Full-Stack com +6 anos de experiência prática na construção de sistemas escaláveis com Laravel, Vue.js e tecnologias web modernas. Especializado em integrações de ERP, automação de marketplaces e APIs de alta performance.',
@@ -121,17 +121,11 @@ export const projetos = [
         imagem: imgProjeto('jogo-memoria.jpeg'),
     },
     {
-        nome: 'Maktub — Gestão de Bar & Eventos',
-        descricao: 'Painel para bar e eventos com Laravel 12, Inertia.js e Vue 3: eventos, custos e despesas fixas consolidados em um dashboard. Projeto em desenvolvimento, com módulos de insumos, drinks e financeiro a caminho.',
-        tags: ['Laravel 12', 'Inertia.js', 'Vue 3', 'Tailwind CSS'],
-        imagem: imgProjeto('maktub.jpeg'),
-    },
-    {
-        nome: 'Financial Tools Dashboard',
-        descricao: 'Aplicação web autenticada com ferramentas financeiras: cálculo de margem, simulação de juros compostos e visualização de fluxo de caixa pessoal.',
-        tags: ['Vue'],
+        nome: 'Calculadora de Juros Compostos',
+        descricao: 'Ferramenta interativa para simulação da evolução do patrimônio com capital inicial, aportes mensais, taxa de juros mensal ou anual, prazo em meses ou anos, total investido, juros acumulados e composição percentual.',
+        tags: ['Vue 3', 'Tailwind CSS'],
         to: '/calculadora-juros-compostos',
-        imagem: imgProjeto('financial-tools.png'),
+        imagem: imgProjeto('calculadora-juros-compostos.png'),
     },
     {
         nome: 'Calculadora de Margem de Lucro',
@@ -141,22 +135,22 @@ export const projetos = [
         imagem: imgProjeto('calculadora-margem.png'),
     },
     {
-        nome: 'Sistema de Gerenciamento de Documentos (DMS)',
-        descricao: 'Gestão segura de arquivos no AWS S3, com controle de acesso, metadados e URLs temporárias para compartilhamento.',
-        tags: ['Laravel', 'AWS S3'],
-        imagem: imgProjeto('dms.jpeg'),
-    },
-    {
-        nome: 'Dashboard de Inteligência Financeira',
-        descricao: 'Acompanhamento de receitas e despesas com categorização automática e gráficos interativos mensais.',
-        tags: ['Laravel', 'Vue.js', 'Highcharts'],
-        imagem: imgProjeto('dashboard-financeiro.jpeg'),
-    },
-    {
         nome: 'API de Controle Financeiro',
         descricao: 'API e interface para finanças pessoais, com saldo mensal, categorização de receitas/despesas e cálculos em tempo real.',
         tags: ['NestJS', 'React'],
         imagem: imgProjeto('api-financeira.jpeg'),
+    },
+    {
+        nome: 'Maktub — Gestão de Bar & Eventos',
+        descricao: 'Painel para bar e eventos com Laravel 12, Inertia.js e Vue 3: eventos, custos e despesas fixas consolidados em um dashboard. Projeto em desenvolvimento, com módulos de insumos, drinks e financeiro a caminho.',
+        tags: ['Laravel 12', 'Inertia.js', 'Vue 3', 'Tailwind CSS'],
+        imagem: imgProjeto('maktub.jpeg'),
+    },
+    {
+        nome: 'Sistema de Gerenciamento de Documentos (DMS)',
+        descricao: 'Gestão segura de arquivos no AWS S3, com controle de acesso, metadados e URLs temporárias para compartilhamento.',
+        tags: ['Laravel', 'AWS S3'],
+        imagem: imgProjeto('dms.png'),
     },
 ];
 
